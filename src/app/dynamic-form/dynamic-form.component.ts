@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormBuilder, FormGroup, Validator, Validators } from '@angular/forms';
-import { IDynamicFormConfig, DynamicFormControlType } from './dynamic-form.models';
+import { IDynamicFormConfig, DynamicFormControlType, DynamicFormControlBase, DatePickerFormControl } from './dynamic-form.models';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -16,8 +16,15 @@ export class DynamicFormComponent implements OnInit {
   public formRowCellCountList: number[] = [];
   public formControlTypes = DynamicFormControlType;
 
-  public banks = ["sdfs", "2wer", "sfdsdf", "23423"];
-  public bankFilterCtrl: FormControl = new FormControl();
+  public banks = [
+    "sdfs", "2wer", "sfdsdf", "23423",
+    "sdfs", "2wer", "sfdsdf", "23423",
+    "sdfs", "2wer", "sfdsdf", "23423",
+    "sdfs", "2wer", "sfdsdf", "23423",
+    "sdfs", "2wer", "sfdsdf", "23423",
+    "sdfs", "2wer", "sfdsdf", "23423",
+    "sdfs", "2wer", "sfdsdf", "23423"
+  ];
 
   constructor(private formBuilder: FormBuilder) { }
 
@@ -27,13 +34,36 @@ export class DynamicFormComponent implements OnInit {
     const formGroup: any = {};
     for (const rows of this.formConfig.controls) {
       for (const cell of rows) {
-        formGroup[cell.key] = cell.isRequired ? [cell.value, Validators.required] : [cell.value];
+        formGroup[cell.key] = cell.isRequired ? [cell.value, [Validators.required]] : [cell.value];
       }
     }
     this.dynamicForm = this.formBuilder.group(formGroup);
   }
 
+
   public onFormSubmit() {
-    this.formSubmit.emit(this.dynamicForm.value);
+    if (this.dynamicForm.valid) {
+      this.formSubmit.emit(this.dynamicForm.value);
+
+    } else {
+      let control;
+      for (const field in this.dynamicForm.controls) {
+        if (field) {
+          control = this.dynamicForm.get(field);
+          control.markAsTouched({ onlySelf: true });
+        }
+      }
+    }
+  }
+
+  private getFieldValidators(control: DynamicFormControlBase<any>) {
+    const validations = control.isRequired ? [Validators.required] : [];
+    switch (control.type) {
+      case DynamicFormControlType.datePicker:
+        const dateFormControl = control as DatePickerFormControl;
+        return validations;
+      default:
+        return validations;
+    }
   }
 }

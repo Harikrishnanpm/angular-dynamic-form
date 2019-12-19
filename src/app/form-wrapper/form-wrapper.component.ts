@@ -1,4 +1,4 @@
-import { DatePickerFormControl } from './../dynamic-form/dynamic-form.models';
+import { DatePickerFormControl, MultiSelectFormControl } from './../dynamic-form/dynamic-form.models';
 import {
   Component,
   OnInit
@@ -27,17 +27,20 @@ export class FormWrapperComponent implements OnInit {
             label: 'control1',
             value: "hiii",
             key: 'test1',
-            dateFormat:""
+            dateFormat: "",
+            isRequired: true
           }),
-          new SelectFormControl({
+          new MultiSelectFormControl({
             label: 'control2',
-            value: "sdfd",
-            key: 'test2'
+            value: [],
+            key: 'test2',
+            isRequired: true
           }),
           new TextFormControl({
             label: 'control3',
-            value: "56756",
-            key: 'test3'
+            value: "",
+            key: 'test3',
+            isRequired: true
           })
         ],
         [
@@ -120,6 +123,5 @@ export class FormWrapperComponent implements OnInit {
   }
 
   public onFormSubmit(formData) {
-    debugger
   }
 }

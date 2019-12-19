@@ -13,9 +13,10 @@ import {
 } from '@angular/material';
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ErrorMessageComponent } from './error-message/error-message.component';
 
 @NgModule({
-  declarations: [DynamicFormComponent],
+  declarations: [DynamicFormComponent, ErrorMessageComponent],
   exports: [DynamicFormComponent],
   imports: [
     BrowserModule,
