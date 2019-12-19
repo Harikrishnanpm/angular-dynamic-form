@@ -1,0 +1,39 @@
+<mat-card>
+  <mat-card-title>test</mat-card-title>
+  <mat-card-content>
+    <div class="example-container">
+      <form [formGroup]="dynamicForm" class="dynamic-form" (ngSubmit)="onFormSubmit()">
+        <div class="row" *ngFor="let rowConfig of formConfig.controls, let i = index">
+          <div [ngSwitch]="cellConfig.type" *ngFor="let cellConfig of rowConfig, let j = index">
+            <mat-form-field *ngSwitchCase="formControlTypes.select">
+              <mat-label>{{cellConfig.label}}</mat-label>
+              <mat-select [formControlName]="cellConfig.key">
+                <mat-option *ngFor="let food of banks" [value]="food">
+                  {{food}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field *ngSwitchCase="formControlTypes.text">
+              <input matInput [formControlName]="cellConfig.key"
+                [placeholder]="cellConfig.label">
+            </mat-form-field>
+            <!-- <mat-select [placeholder]="cellConfig.label" #singleSelect *ngSwitchCase="formControlTypes.select">
+                <mat-option>
+                  <ngx-mat-select-search [formControl]="cellConfig.key"></ngx-mat-select-search>
+                </mat-option>
+                <mat-option *ngFor="let bank of banks" [value]="bank">
+                  {{bank}}
+                </mat-option>
+              </mat-select> -->
+            <mat-form-field class="date-picker" *ngSwitchCase="formControlTypes.datePicker">
+              <input matInput [matDatepicker]="picker" placeholder="Choose a date">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+        <button mat-raised-button color="primary">Submit</button>
+      </form>
+    </div>
+  </mat-card-content>
+</mat-card>
