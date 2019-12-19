@@ -22,6 +22,8 @@ export class DynamicFormComponent implements OnInit {
   constructor(private formBuilder: FormBuilder) { }
 
   public ngOnInit() {
+
+
     const formGroup: any = {};
     for (const rows of this.formConfig.controls) {
       for (const cell of rows) {
