@@ -34,7 +34,16 @@ export class DynamicFormComponent implements OnInit {
     const formGroup: any = {};
     for (const rows of this.formConfig.controls) {
       for (const cell of rows) {
-        formGroup[cell.key] = cell.isRequired ? [cell.value, [Validators.required]] : [cell.value];
+        formGroup[cell.key] = cell.isRequired ?
+          [{
+            value: cell.value,
+            disabled: cell.isDisabled
+          }, [Validators.required]
+          ] :
+          [{
+            value: cell.value,
+            disabled: cell.isDisabled
+          }];
       }
     }
     this.dynamicForm = this.formBuilder.group(formGroup);

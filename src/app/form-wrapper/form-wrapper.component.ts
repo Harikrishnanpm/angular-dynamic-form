@@ -28,25 +28,29 @@ export class FormWrapperComponent implements OnInit {
             value: "hiii",
             key: 'test1',
             dateFormat: "",
-            isRequired: true
+            isRequired: true,
+            isDisabled: true
           }),
           new MultiSelectFormControl({
             label: 'control2',
             value: [],
             key: 'test2',
-            isRequired: true
+            isRequired: true,
+            isDisabled: true
           }),
           new TextFormControl({
             label: 'control3',
             value: "",
             key: 'test3',
-            isRequired: true
+            isRequired: true,
+            isDisabled: true
           }),
           new TextFormControl({
             label: 'control3',
             value: "",
             key: 'test90',
-            isRequired: true
+            isRequired: true,
+            isDisabled: true
           }),
           new TextFormControl({
             label: 'control3',
