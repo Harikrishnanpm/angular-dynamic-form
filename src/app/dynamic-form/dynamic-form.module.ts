@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { DynamicFormComponent } from './dynamic-form.component';
 import {
-  MatCardModule,
   MatFormFieldModule,
   MatOptionModule,
   MatSelectModule,
@@ -20,7 +19,6 @@ import { ErrorMessageComponent } from './error-message/error-message.component';
   exports: [DynamicFormComponent],
   imports: [
     BrowserModule,
-    MatCardModule,
     MatFormFieldModule,
     MatOptionModule,
     MatSelectModule,

@@ -41,6 +41,18 @@ export class FormWrapperComponent implements OnInit {
             value: "",
             key: 'test3',
             isRequired: true
+          }),
+          new TextFormControl({
+            label: 'control3',
+            value: "",
+            key: 'test90',
+            isRequired: true
+          }),
+          new TextFormControl({
+            label: 'control3',
+            value: "",
+            key: 'test56',
+            isRequired: true
           })
         ],
         [
@@ -64,58 +76,58 @@ export class FormWrapperComponent implements OnInit {
           new TextFormControl({
             label: 'control4',
             value: "234234",
-            key: 'test4'
+            key: 'test7'
           }),
           new TextFormControl({
             label: 'control5',
             value: null,
-            key: 'test5'
+            key: 'test8'
           })
         ],
         [
           new TextFormControl({
             label: 'control4',
             value: "234234",
-            key: 'test4'
+            key: 'test9'
           }),
           new SelectFormControl({
             label: 'control6',
             value: null,
-            key: 'test6'
+            key: 'test10'
           })
         ],
         [
           new TextFormControl({
             label: 'control4',
             value: "234234",
-            key: 'test4'
+            key: 'test11'
           }),
           new TextFormControl({
             label: 'control5',
             value: null,
-            key: 'test5'
+            key: 'test12'
           }),
           new SelectFormControl({
             label: 'control6',
             value: null,
-            key: 'test6'
+            key: 'test13'
           })
         ],
         [
           new TextFormControl({
             label: 'control4',
             value: "234234",
-            key: 'test4'
+            key: 'test14'
           }),
           new TextFormControl({
             label: 'control5',
             value: null,
-            key: 'test5'
+            key: 'test15'
           }),
           new SelectFormControl({
             label: 'control6',
             value: null,
-            key: 'test6'
+            key: 'test16'
           })
         ]
       ]

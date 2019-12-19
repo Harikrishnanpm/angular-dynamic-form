@@ -12,6 +12,7 @@ interface IDynamicFormControlOption<T> {
   value: T;
   key: string;
   label: string;
+  isDisabled?: boolean;
   isRequired?: boolean;
 }
 
@@ -30,6 +31,7 @@ export class DynamicFormControlBase<T> implements IDynamicFormControlOption<T> {
   public key: string;
   public label: string;
   public dateFormat: string;
+  public isDisabled: boolean;
   public isRequired: boolean;
   public type: DynamicFormControlType;
 
@@ -39,6 +41,7 @@ export class DynamicFormControlBase<T> implements IDynamicFormControlOption<T> {
     this.value = option.value;
     this.label = option.label;
     this.dateFormat = dateFormat;
+    this.isDisabled = option.isDisabled;
     this.isRequired = option.isRequired;
   }
 }
@@ -60,6 +63,12 @@ export class SelectFormControl extends DynamicFormControlBase<string> {
     super(option, DynamicFormControlType.select);
   }
 }
+
+// export class EmptyFormControl extends DynamicFormControlBase<string> {
+//   constructor(option: IDynamicFormControlOption<string>) {
+//     super(option, null);
+//   }
+// }
 
 export class MultiSelectFormControl extends DynamicFormControlBase<string[]> {
   constructor(option: IDynamicFormControlOption<string[]>) {

@@ -1,13 +1,17 @@
-.example-container {
+.dynamic-form {
+  width: 100%;
+}
+
+.dynamic-form .row {
   display: flex;
-  flex-direction: column;
 }
 
 .dynamic-form .row div {
-  margin: 10px;
-  display: inline-block;
+  margin-right: 10px;
+  flex: 1;
 }
 
-.date-picker .mat-form-field-wrapper .mat-form-field-flex .mat-form-field-infix {
-  width: 90% !important;
+.dynamic-form .row div mat-form-field {
+  width: 100% !important;
 }
+

@@ -1,7 +1,7 @@
 <span *ngIf="dynamicFormControl.invalid && (dynamicFormControl.dirty || dynamicFormControl.touched)" class="alert alert-danger">
 
   <span *ngIf="dynamicFormControl.errors.required">
-    Name is required.
+    {{label}} is required.
   </span>
   <span *ngIf="dynamicFormControl.errors.minlength">
     Name must be at least 4 characters long.

@@ -7,7 +7,9 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./error-message.component.sass']
 })
 export class ErrorMessageComponent implements OnInit {
+  @Input() label: string;
   @Input() dynamicFormControl: FormControl;
+
   constructor() { }
 
   ngOnInit() {
