@@ -53,7 +53,6 @@ export class DynamicFormComponent implements OnInit {
   public onFormSubmit() {
     if (this.dynamicForm.valid) {
       this.formSubmit.emit(this.dynamicForm.value);
-
     } else {
       let control;
       for (const field in this.dynamicForm.controls) {
