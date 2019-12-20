@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormBuilder, FormGroup, Validator, Validators } from '@angular/forms';
 import { IDynamicFormConfig, DynamicFormControlType, DynamicFormControlBase, DatePickerFormControl } from './dynamic-form.models';
 
