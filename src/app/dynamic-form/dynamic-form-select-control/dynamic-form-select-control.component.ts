@@ -15,6 +15,8 @@ export class DynamicFormSelectControlComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    console.log(this.formConfig)
+    debugger
   }
 
 }

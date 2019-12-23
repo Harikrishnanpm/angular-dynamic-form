@@ -121,6 +121,6 @@ export class DateRangePickerFormControl extends DynamicFormControlDate<IDateRang
 }
 
 export interface IDynamicFormConfig {
-  controls: (TextFormControl | SelectFormControl<any> | MultiSelectFormControl<any> | CheckboxFormControl
-    | DatePickerFormControl | DateRangePickerFormControl)[][];
+  controls: any;//(TextFormControl | SelectFormControl<any> | MultiSelectFormControl<any> | CheckboxFormControl
+    //| DatePickerFormControl | DateRangePickerFormControl)[][];
 }
