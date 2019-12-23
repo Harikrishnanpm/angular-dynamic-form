@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormBuilder, FormGroup, Validator, Validators } from '@angular/forms';
 import { IDynamicFormConfig, DynamicFormControlType, DynamicFormControlBase, DatePickerFormControl } from './dynamic-form.models';
 
@@ -16,21 +16,9 @@ export class DynamicFormComponent implements OnInit {
   public formRowCellCountList: number[] = [];
   public formControlTypes = DynamicFormControlType;
 
-  public banks = [
-    "sdfs", "2wer", "sfdsdf", "23423",
-    "sdfs", "2wer", "sfdsdf", "23423",
-    "sdfs", "2wer", "sfdsdf", "23423",
-    "sdfs", "2wer", "sfdsdf", "23423",
-    "sdfs", "2wer", "sfdsdf", "23423",
-    "sdfs", "2wer", "sfdsdf", "23423",
-    "sdfs", "2wer", "sfdsdf", "23423"
-  ];
-
   constructor(private formBuilder: FormBuilder) { }
 
   public ngOnInit() {
-
-
     const formGroup: any = {};
     for (const rows of this.formConfig.controls) {
       for (const cell of rows) {

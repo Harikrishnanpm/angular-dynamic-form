@@ -1,0 +1,29 @@
+<mat-form-field *ngIf="formConfig.type== formControlTypes.select" class="example-full-width">
+  <mat-label>{{formConfig.label}}</mat-label>
+  <mat-select [placeholder]="formConfig.label" #singleSelect>
+    <mat-option>
+      <ngx-mat-select-search placeholderLabel="Search..." noEntriesFoundLabel="No Result Found!"
+        [formControlName]="formConfig.key"></ngx-mat-select-search>
+    </mat-option>
+    <mat-option *ngFor="let bank of formConfig.data" [value]="bank">
+      {{bank}}
+    </mat-option>
+  </mat-select>
+  <mat-error>
+    <app-error-message [dynamicFormControl]="dynamicForm.get([formConfig.key])"></app-error-message>
+  </mat-error>
+</mat-form-field>
+
+<mat-form-field  *ngIf="formConfig.type== formControlTypes.multiSelect" class="example-full-width">
+  <mat-label>{{formConfig.label}}</mat-label>
+  <mat-select [formControlName]="formConfig.key" multiple>
+    <mat-option>
+      <ngx-mat-select-search placeholderLabel="Search..." noEntriesFoundLabel="No Result Found!"
+        [formControlName]="formConfig.key"></ngx-mat-select-search>
+    </mat-option>
+    <mat-option *ngFor="let food of formConfig.data" [value]="food">{{food}}</mat-option>
+  </mat-select>
+  <mat-error>
+    <app-error-message [dynamicFormControl]="dynamicForm.get([formConfig.key])"></app-error-message>
+  </mat-error>
+</mat-form-field>

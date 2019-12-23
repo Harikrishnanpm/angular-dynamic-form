@@ -1,4 +1,4 @@
-import { DatePickerFormControl, MultiSelectFormControl } from './../dynamic-form/dynamic-form.models';
+import { DatePickerFormControl, MultiSelectFormControl, DynamicFormControlType } from './../dynamic-form/dynamic-form.models';
 import {
   Component,
   OnInit
@@ -8,6 +8,11 @@ import {
   TextFormControl,
   SelectFormControl
 } from '../dynamic-form/dynamic-form.models';
+
+interface ICountry {
+  CountryId: number;
+  CountryName: string;
+}
 
 @Component({
   selector: 'app-form-wrapper',
@@ -20,6 +25,13 @@ export class FormWrapperComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    const countries: ICountry[] = [{
+      CountryId: 1,
+      CountryName: 'India'
+    }, {
+      CountryId: 2,
+      CountryName: 'Sri Lanka'
+    }];
     this.dynamicFormConfig = {
       controls: [
         [
@@ -29,14 +41,18 @@ export class FormWrapperComponent implements OnInit {
             key: 'test1',
             dateFormat: "",
             isRequired: true,
-            isDisabled: false
+            isDisabled: false,
+
           }),
-          new MultiSelectFormControl({
+          new MultiSelectFormControl<ICountry>({
             label: 'control2',
             value: [],
             key: 'test2',
             isRequired: true,
-            isDisabled: false
+            isDisabled: false,
+            data: countries,
+            dataValueParam: "CountryName",
+            dataIdParam: "CountryId"
           }),
           new TextFormControl({
             label: 'control3',
@@ -70,10 +86,13 @@ export class FormWrapperComponent implements OnInit {
             value: null,
             key: 'test5'
           }),
-          new SelectFormControl({
+          new SelectFormControl<ICountry>({
             label: 'control6',
             value: null,
-            key: 'test6'
+            key: 'test6',
+            data: countries,
+            dataValueParam: "CountryName",
+            dataIdParam: "CountryId"
           })
         ],
         [
@@ -97,7 +116,10 @@ export class FormWrapperComponent implements OnInit {
           new SelectFormControl({
             label: 'control6',
             value: null,
-            key: 'test10'
+            key: 'test10',
+            data: countries,
+            dataValueParam: "CountryName",
+            dataIdParam: "CountryId"
           })
         ],
         [
@@ -114,7 +136,10 @@ export class FormWrapperComponent implements OnInit {
           new SelectFormControl({
             label: 'control6',
             value: null,
-            key: 'test13'
+            key: 'test13',
+            data: countries,
+            dataValueParam: "CountryName",
+            dataIdParam: "CountryId"
           })
         ],
         [
@@ -131,7 +156,10 @@ export class FormWrapperComponent implements OnInit {
           new SelectFormControl({
             label: 'control6',
             value: null,
-            key: 'test16'
+            key: 'test16',
+            data: countries,
+            dataValueParam: "CountryName",
+            dataIdParam: "CountryId"
           })
         ]
       ]

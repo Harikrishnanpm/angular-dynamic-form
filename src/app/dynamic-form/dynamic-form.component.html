@@ -4,21 +4,7 @@
     <div [ngSwitch]="cellConfig.type" *ngFor="let cellConfig of rowConfig">
 
       <!-- SINGLE SELECT -->
-      <mat-form-field *ngSwitchCase="formControlTypes.select" class="example-full-width">
-        <mat-label>{{cellConfig.label}}</mat-label>
-        <mat-select [placeholder]="cellConfig.label" #singleSelect>
-          <mat-option>
-            <ngx-mat-select-search placeholderLabel="Search..." noEntriesFoundLabel="No Result Found!"
-              [formControlName]="cellConfig.key"></ngx-mat-select-search>
-          </mat-option>
-          <mat-option *ngFor="let bank of banks" [value]="bank">
-            {{bank}}
-          </mat-option>
-        </mat-select>
-        <mat-error>
-          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"></app-error-message>
-        </mat-error>
-      </mat-form-field>
+
 
       <!-- TEXT INPUT -->
       <mat-form-field *ngSwitchCase="formControlTypes.text" class="example-full-width">
@@ -30,7 +16,7 @@
       </mat-form-field>
 
       <!-- DATE PICKER -->
-      <mat-form-field class="example-full-width date-picker" *ngSwitchCase="formControlTypes.datePicker" >
+      <mat-form-field class="example-full-width date-picker" *ngSwitchCase="formControlTypes.datePicker">
         <mat-label>{{cellConfig.label}}</mat-label>
         <input matInput [formControlName]="cellConfig.key" [matDatepicker]="picker" placeholder="Choose a date">
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -41,19 +27,7 @@
       </mat-form-field>
 
       <!-- MULTIPLE SELECT -->
-      <mat-form-field *ngSwitchCase="formControlTypes.multiSelect" class="example-full-width">
-        <mat-label>{{cellConfig.label}}</mat-label>
-        <mat-select [formControlName]="cellConfig.key" multiple>
-          <mat-option>
-            <ngx-mat-select-search placeholderLabel="Search..." noEntriesFoundLabel="No Result Found!"
-              [formControlName]="cellConfig.key"></ngx-mat-select-search>
-          </mat-option>
-          <mat-option *ngFor="let food of banks" [value]="food">{{food}}</mat-option>
-        </mat-select>
-        <mat-error>
-          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"></app-error-message>
-        </mat-error>
-      </mat-form-field>
+      <app-dynamic-form-select-control (formConfig)="cellConfig" (dynamicForm)="dynamicForm"></app-dynamic-form-select-control>
       <div *ngSwitchDefault></div>
     </div>
   </div>

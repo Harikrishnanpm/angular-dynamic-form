@@ -16,33 +16,59 @@ interface IDynamicFormControlOption<T> {
   isRequired?: boolean;
 }
 
-interface IDynamicFormControlDateOption<T> extends IDynamicFormControlOption<T> {
-  dateFormat: string;
-}
-
 interface IDateRangeValueModel {
   form: string;
   to: string;
 }
+
+
+interface IDynamicSelectFormControlOption<T, U> extends IDynamicFormControlOption<T> {
+  data: U[];
+  dataIdParam?: string;
+  dataValueParam?: string;
+}
+
+interface IDynamicDateFormControlOption<T> extends IDynamicFormControlOption<T> {
+  dateFormat: string;
+}
+
 
 export class DynamicFormControlBase<T> implements IDynamicFormControlOption<T> {
 
   public value: T;
   public key: string;
   public label: string;
-  public dateFormat: string;
   public isDisabled: boolean;
   public isRequired: boolean;
   public type: DynamicFormControlType;
 
-  constructor(option: IDynamicFormControlOption<T>, type: DynamicFormControlType, dateFormat?: string) {
+  constructor(option: IDynamicFormControlOption<T>, type: DynamicFormControlType) {
     this.type = type;
     this.key = option.key;
     this.value = option.value;
     this.label = option.label;
-    this.dateFormat = dateFormat;
     this.isDisabled = option.isDisabled;
     this.isRequired = option.isRequired;
+  }
+}
+
+export class DynamicFormControlSelect<T, U> extends DynamicFormControlBase<T> implements IDynamicSelectFormControlOption<T, U> {
+  data: U[];
+  dataIdParam: string;
+  dataValueParam: string;
+  constructor(option: IDynamicSelectFormControlOption<T, U>, type: DynamicFormControlType) {
+    super(option, type);
+    this.data = option.data;
+    this.dataIdParam = option.dataIdParam;
+    this.dataValueParam = option.dataValueParam;
+  }
+}
+
+export class DynamicFormControlDate<T> extends DynamicFormControlBase<T> implements IDynamicDateFormControlOption<T> {
+  dateFormat: string;
+  constructor(option: IDynamicDateFormControlOption<T>, type: DynamicFormControlType) {
+    super(option, type);
+    this.dateFormat = option.dateFormat;
   }
 }
 
@@ -58,8 +84,8 @@ export class TextAreaFormControl extends DynamicFormControlBase<string> {
   }
 }
 
-export class SelectFormControl extends DynamicFormControlBase<string> {
-  constructor(option: IDynamicFormControlOption<string>) {
+export class SelectFormControl<T> extends DynamicFormControlSelect<string, T> {
+  constructor(option: IDynamicSelectFormControlOption<string, T>) {
     super(option, DynamicFormControlType.select);
   }
 }
@@ -70,8 +96,8 @@ export class SelectFormControl extends DynamicFormControlBase<string> {
 //   }
 // }
 
-export class MultiSelectFormControl extends DynamicFormControlBase<string[]> {
-  constructor(option: IDynamicFormControlOption<string[]>) {
+export class MultiSelectFormControl<T> extends DynamicFormControlSelect<string[], T> {
+  constructor(option: IDynamicSelectFormControlOption<string[], T>) {
     super(option, DynamicFormControlType.multiSelect);
   }
 }
@@ -82,19 +108,19 @@ export class CheckboxFormControl extends DynamicFormControlBase<boolean> {
   }
 }
 
-export class DatePickerFormControl extends DynamicFormControlBase<string> {
-  constructor(option: IDynamicFormControlDateOption<string>) {
-    super(option, DynamicFormControlType.datePicker, option.dateFormat);
+export class DatePickerFormControl extends DynamicFormControlDate<string> {
+  constructor(option: IDynamicDateFormControlOption<string>) {
+    super(option, DynamicFormControlType.datePicker);
   }
 }
 
-export class DateRangePickerFormControl extends DynamicFormControlBase<IDateRangeValueModel> {
-  constructor(option: IDynamicFormControlDateOption<IDateRangeValueModel>) {
-    super(option, DynamicFormControlType.dateRangePicker, option.dateFormat);
+export class DateRangePickerFormControl extends DynamicFormControlDate<IDateRangeValueModel> {
+  constructor(option: IDynamicDateFormControlOption<IDateRangeValueModel>) {
+    super(option, DynamicFormControlType.dateRangePicker);
   }
 }
 
 export interface IDynamicFormConfig {
-  controls: (TextFormControl | SelectFormControl | MultiSelectFormControl | CheckboxFormControl
+  controls: (TextFormControl | SelectFormControl<any> | MultiSelectFormControl<any> | CheckboxFormControl
     | DatePickerFormControl | DateRangePickerFormControl)[][];
 }

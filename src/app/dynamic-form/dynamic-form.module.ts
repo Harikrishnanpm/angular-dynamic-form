@@ -13,10 +13,15 @@ import {
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ErrorMessageComponent } from './error-message/error-message.component';
+import { DynamicFormSelectControlComponent } from './dynamic-form-select-control/dynamic-form-select-control.component';
 
 @NgModule({
-  declarations: [DynamicFormComponent, ErrorMessageComponent],
-  exports: [DynamicFormComponent],
+  declarations: [
+    DynamicFormComponent,
+    ErrorMessageComponent,
+    DynamicFormSelectControlComponent
+  ],
+  exports: [DynamicFormComponent, DynamicFormSelectControlComponent],
   imports: [
     BrowserModule,
     MatFormFieldModule,
@@ -28,6 +33,7 @@ import { ErrorMessageComponent } from './error-message/error-message.component';
     MatNativeDateModule,
     NgxMatSelectSearchModule,
     ReactiveFormsModule
-  ]
+  ],
+  entryComponents: [DynamicFormSelectControlComponent]
 })
 export class DynamicFormModule { }
