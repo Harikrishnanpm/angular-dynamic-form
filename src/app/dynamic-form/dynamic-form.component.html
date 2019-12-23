@@ -17,7 +17,8 @@
           </mat-option>
         </mat-select>
         <mat-error>
-          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])" [errorMessages]="validationErrorMessages[cellConfig.key]" ></app-error-message>
+          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"
+            [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
         </mat-error>
       </mat-form-field>
 
@@ -28,11 +29,13 @@
             <ngx-mat-select-search placeholderLabel="Search..." noEntriesFoundLabel="No Result Found!"
               [formControlName]="cellConfig.key"></ngx-mat-select-search>
           </mat-option>
-          <mat-option *ngFor="let data of cellConfig.data" [value]="data[cellConfig.dataIdParam]">{{data[cellConfig.dataValueParam]}}
+          <mat-option *ngFor="let data of cellConfig.data" [value]="data[cellConfig.dataIdParam]">
+            {{data[cellConfig.dataValueParam]}}
           </mat-option>
         </mat-select>
         <mat-error>
-          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])" [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
+          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"
+            [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
         </mat-error>
       </mat-form-field>
       <!-- SINGLE SELECT -->
@@ -43,7 +46,8 @@
         <mat-label>{{cellConfig.label}}</mat-label>
         <input matInput [id]="cellConfig.key" [formControlName]="cellConfig.key" [placeholder]="cellConfig.label">
         <mat-error>
-          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])" [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
+          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"
+            [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
         </mat-error>
       </mat-form-field>
 
@@ -54,9 +58,11 @@
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
         <mat-error>
-          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])" [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
+          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"
+            [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
         </mat-error>
       </mat-form-field>
+      <mat-checkbox [formControlName]="cellConfig.key" *ngIf="cellConfig.type == formControlTypes.checkbox">{{cellConfig.label}}</mat-checkbox>
 
       <!-- MULTIPLE SELECT -->
       <div *ngIf="!cellConfig.type"></div>

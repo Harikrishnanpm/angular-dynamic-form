@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DatePickerFormControl, DynamicFormControlType, MultiSelectFormControl } from './../dynamic-form/dynamic-form.models';
+import { DatePickerFormControl, DynamicFormControlType, MultiSelectFormControl, CheckboxFormControl } from './../dynamic-form/dynamic-form.models';
 import { IDynamicFormConfig, SelectFormControl, TextFormControl } from '../dynamic-form/dynamic-form.models';
 import { Validators } from '@angular/forms';
 
@@ -33,25 +33,23 @@ export class FormWrapperComponent implements OnInit {
             label: 'control3',
             value: "",
             key: 'test3',
-            isDisabled: false,
-            validation: {
-              required: true,
-              minLength: 3,
-              maxLength: 10
-            }
+            isDisabled: false
+          }),
+          new CheckboxFormControl({
+            label: 'Check me',
+            value: false,
+            key: 'checkbox'
           }),
           new TextFormControl({
             label: 'control3',
             value: "",
             key: 'test90',
-            isRequired: true,
             isDisabled: false
           }),
           new TextFormControl({
             label: 'control3',
             value: "",
-            key: 'test56',
-            isRequired: true
+            key: 'test56'
           })
         ],
         [
@@ -146,5 +144,6 @@ export class FormWrapperComponent implements OnInit {
   }
 
   public onFormSubmit(formData) {
+    debugger
   }
 }

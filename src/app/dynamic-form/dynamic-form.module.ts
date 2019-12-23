@@ -1,19 +1,20 @@
-import { NgModule } from '@angular/core';
-import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { BrowserModule } from '@angular/platform-browser';
 import { DynamicFormComponent } from './dynamic-form.component';
+import { DynamicFormSelectControlComponent } from './dynamic-form-select-control/dynamic-form-select-control.component';
+import { ErrorMessageComponent } from './error-message/error-message.component';
 import {
-  MatFormFieldModule,
-  MatOptionModule,
-  MatSelectModule,
-  MatInputModule,
   MatButtonModule,
   MatDatepickerModule,
-  MatNativeDateModule
+  MatFormFieldModule,
+  MatInputModule,
+  MatNativeDateModule,
+  MatOptionModule,
+  MatSelectModule,
+  MatCheckboxModule
 } from '@angular/material';
-import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ErrorMessageComponent } from './error-message/error-message.component';
-import { DynamicFormSelectControlComponent } from './dynamic-form-select-control/dynamic-form-select-control.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { DynamicFormSelectControlComponent } from './dynamic-form-select-control
     MatSelectModule,
     MatInputModule,
     MatButtonModule,
+    MatCheckboxModule,
     MatDatepickerModule,
     MatNativeDateModule,
     NgxMatSelectSearchModule,
