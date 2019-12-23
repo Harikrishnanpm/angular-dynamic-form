@@ -1,10 +1,7 @@
 <form [formGroup]="dynamicForm" class="dynamic-form" (ngSubmit)="onFormSubmit()">
   <div class="row" *ngFor="let rowConfig of formConfig.controls">
     <div *ngFor="let cellConfig of rowConfig">
-
-
-      <!-- <app-dynamic-form-select-control [formConfig]="cellConfig" [dynamicForm]="dynamicForm">
-      </app-dynamic-form-select-control> -->
+      <!-- SINGLE SELECT -->
       <mat-form-field *ngIf="cellConfig.type == formControlTypes.select" class="example-full-width">
         <mat-label>{{cellConfig.label}}</mat-label>
         <mat-select [placeholder]="cellConfig.label" #singleSelect>
@@ -22,6 +19,7 @@
         </mat-error>
       </mat-form-field>
 
+      <!-- MULTIPLE SELECT -->
       <mat-form-field *ngIf="cellConfig.type == formControlTypes.multiSelect" class="example-full-width">
         <mat-label>{{cellConfig.label}}</mat-label>
         <mat-select [formControlName]="cellConfig.key" multiple>
@@ -38,7 +36,6 @@
             [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
         </mat-error>
       </mat-form-field>
-      <!-- SINGLE SELECT -->
 
 
       <!-- TEXT INPUT -->
@@ -64,7 +61,6 @@
       </mat-form-field>
       <mat-checkbox [formControlName]="cellConfig.key" *ngIf="cellConfig.type == formControlTypes.checkbox">{{cellConfig.label}}</mat-checkbox>
 
-      <!-- MULTIPLE SELECT -->
       <div *ngIf="!cellConfig.type"></div>
     </div>
   </div>
