@@ -34,7 +34,9 @@ export class DynamicFormComponent implements OnInit {
   public dynamicForm: FormGroup;
   public formRowCellCountList: number[] = [];
   public formControlTypes = DynamicFormControlType;
-  public validationErrorMessages: IDictionary;
+  public validationErrorMessages: {
+    [key: string]: IDictionary
+  } = {};
 
   constructor(private formBuilder: FormBuilder) { }
 
@@ -45,7 +47,10 @@ export class DynamicFormComponent implements OnInit {
         formGroup[cell.key] = [{
           value: cell.value,
           disabled: cell.isDisabled
-        }, this.getFieldValidators(cell)];
+        }, {
+          validators: this.getFieldValidators(cell),
+          updateOn: 'blur'
+        }];
       }
     }
     this.dynamicForm = this.formBuilder.group(formGroup);
@@ -67,7 +72,9 @@ export class DynamicFormComponent implements OnInit {
   }
 
   private getFieldValidators(control: DynamicFormControlBase<any>) {
-    const formValidatorList = control.isRequired ? [Validators.required] : [];
+    const formValidatorList = [];
+    const controlKey = control.key;
+    this.validationErrorMessages[controlKey] = {};
     if (control.validation) {
       for (const key in control.validation) {
         if (control.validation.hasOwnProperty(key)) {
@@ -77,18 +84,35 @@ export class DynamicFormComponent implements OnInit {
             const customValidations = control.validation[DYNAMIC_FORM_VALIDATION_TYPES.CUSTOM_VALIDATIONS];
             customValidations.forEach((validation: IDynamicFormCustomValidation) => {
               formValidatorList.push(validation.validator);
-              this.validationErrorMessages[validation.validator.name] = validation.validationMessage;
+              this.validationErrorMessages[controlKey][validation.validator.name] = validation.validationMessage;
             });
-          } else {
-            formValidatorList.push(Validators[key](control.validation[key]));
+          } else if (control.validation[key]) {
+            this.validationErrorMessages[controlKey][key.toLowerCase()] = this.buildValidationMessage(key, control.validation[key]);
+            formValidatorList.push(key === DYNAMIC_FORM_VALIDATION_TYPES.REQUIRED ?
+              Validators[key] : Validators[key](control.validation[key]));
           }
         }
       }
-      // control.validation.forEach((validation: IDynamicFormValidator) => {
-      //   debugger
-      //   validations.push(validation.validator);
-      // });
     }
     return formValidatorList;
+  }
+
+  private buildValidationMessage(type: string, value: any) {
+    switch (type) {
+      case DYNAMIC_FORM_VALIDATION_TYPES.REQUIRED:
+        return 'This field is mandatory';
+      case DYNAMIC_FORM_VALIDATION_TYPES.MIN:
+        return `Value should be greater than ${value}`;
+      case DYNAMIC_FORM_VALIDATION_TYPES.MAX:
+        return `Value should be less than ${value}`;
+      case DYNAMIC_FORM_VALIDATION_TYPES.MAX_LENGTH:
+        return `Value length should be less than ${value}`;
+      case DYNAMIC_FORM_VALIDATION_TYPES.MIN_LENGTH:
+        return `Value length should be greater than ${value}`;
+      case DYNAMIC_FORM_VALIDATION_TYPES.PATTERN:
+        return 'Invalid data';
+      default:
+        return '';
+    }
   }
 }

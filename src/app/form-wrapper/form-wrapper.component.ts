@@ -7,9 +7,6 @@ interface ICountry {
   CountryId: number;
   CountryName: string;
 }
-function validateThis() {
-
-}
 
 @Component({
   selector: 'app-form-wrapper',
@@ -32,37 +29,15 @@ export class FormWrapperComponent implements OnInit {
     this.dynamicFormConfig = {
       controls: [
         [
-          new DatePickerFormControl({
-            label: 'control1',
-            value: "hiii",
-            key: 'test1',
-            dateFormat: "",
-            isRequired: true,
-            isDisabled: false
-          }),
-          new MultiSelectFormControl<ICountry>({
-            label: 'control2',
-            value: [],
-            key: 'test2',
-            isRequired: true,
-            isDisabled: false,
-            data: countries,
-            dataValueParam: "CountryName",
-            dataIdParam: "CountryId"
-          }),
           new TextFormControl({
             label: 'control3',
             value: "",
             key: 'test3',
-            isRequired: true,
             isDisabled: false,
             validation: {
-              minLength: 7,
-              maxLength: 10,
-              customValidations: [{
-                validator: validateThis,
-                validationMessage: 'test'
-              }]
+              required: true,
+              minLength: 3,
+              maxLength: 10
             }
           }),
           new TextFormControl({

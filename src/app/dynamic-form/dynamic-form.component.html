@@ -17,7 +17,7 @@
           </mat-option>
         </mat-select>
         <mat-error>
-          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"></app-error-message>
+          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])" [errorMessages]="validationErrorMessages[cellConfig.key]" ></app-error-message>
         </mat-error>
       </mat-form-field>
 
@@ -32,7 +32,7 @@
           </mat-option>
         </mat-select>
         <mat-error>
-          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"></app-error-message>
+          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])" [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
         </mat-error>
       </mat-form-field>
       <!-- SINGLE SELECT -->
@@ -43,7 +43,7 @@
         <mat-label>{{cellConfig.label}}</mat-label>
         <input matInput [id]="cellConfig.key" [formControlName]="cellConfig.key" [placeholder]="cellConfig.label">
         <mat-error>
-          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"></app-error-message>
+          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])" [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
         </mat-error>
       </mat-form-field>
 
@@ -54,7 +54,7 @@
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
         <mat-error>
-          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"></app-error-message>
+          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])" [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
         </mat-error>
       </mat-form-field>
 

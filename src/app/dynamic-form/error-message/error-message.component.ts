@@ -1,5 +1,6 @@
 import { FormControl } from '@angular/forms';
 import { Component, OnInit, Input } from '@angular/core';
+import { DYNAMIC_FORM_VALIDATION_TYPES } from '../dynamic-form.models';
 
 @Component({
   selector: 'app-error-message',
@@ -16,4 +17,11 @@ export class ErrorMessageComponent implements OnInit {
   ngOnInit() {
   }
 
+  public getValidationErrorMessage(errorObject): string {
+    for (const key in errorObject) {
+      if (errorObject.hasOwnProperty(key) && this.errorMessages[key]) {
+        return this.errorMessages[key];
+      }
+    }
+  }
 }
