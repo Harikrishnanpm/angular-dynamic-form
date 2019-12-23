@@ -1,17 +1,14 @@
-import { DatePickerFormControl, MultiSelectFormControl, DynamicFormControlType } from './../dynamic-form/dynamic-form.models';
-import {
-  Component,
-  OnInit
-} from '@angular/core';
-import {
-  IDynamicFormConfig,
-  TextFormControl,
-  SelectFormControl
-} from '../dynamic-form/dynamic-form.models';
+import { Component, OnInit } from '@angular/core';
+import { DatePickerFormControl, DynamicFormControlType, MultiSelectFormControl } from './../dynamic-form/dynamic-form.models';
+import { IDynamicFormConfig, SelectFormControl, TextFormControl } from '../dynamic-form/dynamic-form.models';
+import { Validators } from '@angular/forms';
 
 interface ICountry {
   CountryId: number;
   CountryName: string;
+}
+function validateThis() {
+
 }
 
 @Component({
@@ -41,8 +38,7 @@ export class FormWrapperComponent implements OnInit {
             key: 'test1',
             dateFormat: "",
             isRequired: true,
-            isDisabled: false,
-
+            isDisabled: false
           }),
           new MultiSelectFormControl<ICountry>({
             label: 'control2',
@@ -59,7 +55,15 @@ export class FormWrapperComponent implements OnInit {
             value: "",
             key: 'test3',
             isRequired: true,
-            isDisabled: false
+            isDisabled: false,
+            validation: {
+              minLength: 7,
+              maxLength: 10,
+              customValidations: [{
+                validator: validateThis,
+                validationMessage: 'test'
+              }]
+            }
           }),
           new TextFormControl({
             label: 'control3',

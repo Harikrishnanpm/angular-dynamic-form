@@ -1,3 +1,7 @@
+export interface IDictionary {
+  [key: string]: string;
+}
+
 export enum DynamicFormControlType {
   text,
   select,
@@ -8,12 +12,40 @@ export enum DynamicFormControlType {
   dateRangePicker
 }
 
+
+export const DYNAMIC_FORM_VALIDATION_TYPES = {
+  MIN: 'min',
+  MAX: 'max',
+  EMAIL: 'email',
+  PATTERN: 'pattern',
+  REQUIRED: 'required',
+  MIN_LENGTH: 'minLength',
+  MAX_LENGTH: 'maxLength',
+  CUSTOM_VALIDATIONS: 'customValidations'
+};
+
+export interface IDynamicFormCustomValidation {
+  validator: any;
+  validationMessage: string;
+}
+
+export interface IDynamicFormValidationObject {
+  pattern?: string;
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  min?: string | number;
+  max?: string | number;
+  customValidations?: IDynamicFormCustomValidation[];
+}
+
 interface IDynamicFormControlOption<T> {
   value: T;
   key: string;
   label: string;
   isDisabled?: boolean;
   isRequired?: boolean;
+  validation?: IDynamicFormValidationObject;
 }
 
 interface IDateRangeValueModel {
@@ -41,6 +73,7 @@ export class DynamicFormControlBase<T> implements IDynamicFormControlOption<T> {
   public isDisabled: boolean;
   public isRequired: boolean;
   public type: DynamicFormControlType;
+  public validation: IDynamicFormValidationObject;
 
   constructor(option: IDynamicFormControlOption<T>, type: DynamicFormControlType) {
     this.type = type;
@@ -49,6 +82,7 @@ export class DynamicFormControlBase<T> implements IDynamicFormControlOption<T> {
     this.label = option.label;
     this.isDisabled = option.isDisabled;
     this.isRequired = option.isRequired;
+    this.validation = option.validation;
   }
 }
 
@@ -122,5 +156,5 @@ export class DateRangePickerFormControl extends DynamicFormControlDate<IDateRang
 
 export interface IDynamicFormConfig {
   controls: any;//(TextFormControl | SelectFormControl<any> | MultiSelectFormControl<any> | CheckboxFormControl
-    //| DatePickerFormControl | DateRangePickerFormControl)[][];
+  //| DatePickerFormControl | DateRangePickerFormControl)[][];
 }

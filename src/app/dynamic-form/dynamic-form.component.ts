@@ -1,6 +1,25 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { FormControl, FormBuilder, FormGroup, Validator, Validators } from '@angular/forms';
-import { IDynamicFormConfig, DynamicFormControlType, DynamicFormControlBase, DatePickerFormControl } from './dynamic-form.models';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
+import {
+  DatePickerFormControl,
+  DynamicFormControlBase,
+  DynamicFormControlType,
+  IDictionary,
+  IDynamicFormConfig,
+  DYNAMIC_FORM_VALIDATION_TYPES,
+  IDynamicFormCustomValidation,
+} from './dynamic-form.models';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators
+} from '@angular/forms';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -15,6 +34,7 @@ export class DynamicFormComponent implements OnInit {
   public dynamicForm: FormGroup;
   public formRowCellCountList: number[] = [];
   public formControlTypes = DynamicFormControlType;
+  public validationErrorMessages: IDictionary;
 
   constructor(private formBuilder: FormBuilder) { }
 
@@ -22,16 +42,10 @@ export class DynamicFormComponent implements OnInit {
     const formGroup: any = {};
     for (const rows of this.formConfig.controls) {
       for (const cell of rows) {
-        formGroup[cell.key] = cell.isRequired ?
-          [{
-            value: cell.value,
-            disabled: cell.isDisabled
-          }, [Validators.required]
-          ] :
-          [{
-            value: cell.value,
-            disabled: cell.isDisabled
-          }];
+        formGroup[cell.key] = [{
+          value: cell.value,
+          disabled: cell.isDisabled
+        }, this.getFieldValidators(cell)];
       }
     }
     this.dynamicForm = this.formBuilder.group(formGroup);
@@ -53,13 +67,28 @@ export class DynamicFormComponent implements OnInit {
   }
 
   private getFieldValidators(control: DynamicFormControlBase<any>) {
-    const validations = control.isRequired ? [Validators.required] : [];
-    switch (control.type) {
-      case DynamicFormControlType.datePicker:
-        const dateFormControl = control as DatePickerFormControl;
-        return validations;
-      default:
-        return validations;
+    const formValidatorList = control.isRequired ? [Validators.required] : [];
+    if (control.validation) {
+      for (const key in control.validation) {
+        if (control.validation.hasOwnProperty(key)) {
+          if (key === DYNAMIC_FORM_VALIDATION_TYPES.CUSTOM_VALIDATIONS &&
+            control.validation[DYNAMIC_FORM_VALIDATION_TYPES.CUSTOM_VALIDATIONS] &&
+            control.validation[DYNAMIC_FORM_VALIDATION_TYPES.CUSTOM_VALIDATIONS].length) {
+            const customValidations = control.validation[DYNAMIC_FORM_VALIDATION_TYPES.CUSTOM_VALIDATIONS];
+            customValidations.forEach((validation: IDynamicFormCustomValidation) => {
+              formValidatorList.push(validation.validator);
+              this.validationErrorMessages[validation.validator.name] = validation.validationMessage;
+            });
+          } else {
+            formValidatorList.push(Validators[key](control.validation[key]));
+          }
+        }
+      }
+      // control.validation.forEach((validation: IDynamicFormValidator) => {
+      //   debugger
+      //   validations.push(validation.validator);
+      // });
     }
+    return formValidatorList;
   }
 }

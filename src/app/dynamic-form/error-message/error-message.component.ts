@@ -9,6 +9,7 @@ import { Component, OnInit, Input } from '@angular/core';
 export class ErrorMessageComponent implements OnInit {
   @Input() label: string;
   @Input() dynamicFormControl: FormControl;
+  @Input() errorMessages: { [key: string]: string };
 
   constructor() { }
 
