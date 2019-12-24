@@ -35,18 +35,16 @@ export class DynamicFormComponent implements OnInit {
     this.subscribeFormControlChangeFromParent();
   }
 
-  public updateFormControlValue(formControlName: string, value: any) {
-    this.dynamicForm.patchValue({
-      [formControlName]: value
-    });
-  }
-
-
+  /**
+   * Handle form submit
+   * @memberof DynamicFormComponent
+   */
   public onFormSubmit() {
     if (this.dynamicForm.valid) {
       this.formSubmit.emit(this.dynamicForm.value);
     } else {
       let control;
+      // If form is not valid, checking each field which is dirty.
       for (const field in this.dynamicForm.controls) {
         if (field) {
           control = this.dynamicForm.get(field);
@@ -56,6 +54,12 @@ export class DynamicFormComponent implements OnInit {
     }
   }
 
+
+  /**
+   * Building reactive form object model by using model from parent.
+   * @private
+   * @memberof DynamicFormComponent
+   */
   private buildDynamicReactiveFormObjectModel() {
     const formGroup: any = {};
     for (const rows of this.formConfig.controls) {
@@ -72,9 +76,15 @@ export class DynamicFormComponent implements OnInit {
     this.dynamicForm = this.formBuilder.group(formGroup);
   }
 
+  /**
+   * Handle event emit form the parent for updating form control value or drop-down options.
+   * @private
+   * @memberof DynamicFormComponent
+   */
   private subscribeFormControlChangeFromParent() {
     this.formConfig.controlUpdateObservable.subscribe({
       next: (data: IDynamicFormControlUpdateDataModel<any, any>) => {
+        // Check for value update.
         if (typeof data.newValue !== 'undefined') {
           this.dynamicForm.patchValue({
             [data.key]: data.newValue
@@ -84,6 +94,16 @@ export class DynamicFormComponent implements OnInit {
     });
   }
 
+  /**
+   * Building form control validation array for each form control based on the validation
+   * array passed from the parent. There are two type of validations can be passed ready made angular
+   * validations (eg, required, min, max, etc...) and custom validation functions. Here custom and angular
+   * own validations are processed separately and pushed to the same validator array.
+   * @private
+   * @param {DynamicFormControlBase<any>} control
+   * @returns
+   * @memberof DynamicFormComponent
+   */
   private getFieldValidators(control: DynamicFormControlBase<any>) {
     const formValidatorList = [];
     const controlKey = control.key;
@@ -92,6 +112,7 @@ export class DynamicFormComponent implements OnInit {
       for (const key in control.validation) {
         if (control.validation.hasOwnProperty(key)) {
           if (key === DYNAMIC_FORM_VALIDATION_TYPES.CUSTOM_VALIDATIONS &&
+            // User custom validation required for the form control field.
             control.validation[DYNAMIC_FORM_VALIDATION_TYPES.CUSTOM_VALIDATIONS] &&
             control.validation[DYNAMIC_FORM_VALIDATION_TYPES.CUSTOM_VALIDATIONS].length) {
             const customValidations = control.validation[DYNAMIC_FORM_VALIDATION_TYPES.CUSTOM_VALIDATIONS];
@@ -100,6 +121,7 @@ export class DynamicFormComponent implements OnInit {
               this.validationErrorMessages[controlKey][validation.validator.name] = validation.validationMessage;
             });
           } else if (control.validation[key]) {
+            // Angular own validations.
             this.validationErrorMessages[controlKey][key.toLowerCase()] = this.buildValidationMessage(key, control.validation[key]);
             formValidatorList.push(key === DYNAMIC_FORM_VALIDATION_TYPES.REQUIRED ?
               Validators[key] : Validators[key](control.validation[key]));
@@ -110,7 +132,16 @@ export class DynamicFormComponent implements OnInit {
     return formValidatorList;
   }
 
-  private buildValidationMessage(type: string, value: any) {
+
+  /**
+   * Building validation messages for angular own validations.
+   * @private
+   * @param {string} type
+   * @param {*} value
+   * @returns {string}
+   * @memberof DynamicFormComponent
+   */
+  private buildValidationMessage(type: string, value: any): string {
     switch (type) {
       case DYNAMIC_FORM_VALIDATION_TYPES.REQUIRED:
         return 'This field is mandatory';
