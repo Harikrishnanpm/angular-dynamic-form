@@ -24,6 +24,11 @@ export const DYNAMIC_FORM_VALIDATION_TYPES = {
   CUSTOM_VALIDATIONS: 'customValidations'
 };
 
+export const DYNAMIC_FORM_BUTTON_TYPES = {
+  SUBMIT: 'SUBMIT',
+  CANCEL: 'CANCEL'
+};
+
 export interface IDynamicFormCustomValidation {
   validator: any;
   validationMessage: string;
@@ -156,6 +161,10 @@ export class DateRangePickerFormControl extends DynamicFormControlDate<IDateRang
 
 export interface IDynamicFormConfig {
   controls: any;
+  formButtons: {
+    type: string;
+    onClick?: any;
+  }[];
   // (TextFormControl | SelectFormControl<any> | MultiSelectFormControl<any> | CheckboxFormControl
   // | DatePickerFormControl | DateRangePickerFormControl)[][];
 }

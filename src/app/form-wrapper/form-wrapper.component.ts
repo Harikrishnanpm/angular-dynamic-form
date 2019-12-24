@@ -1,5 +1,11 @@
+import {
+  CheckboxFormControl,
+  DatePickerFormControl,
+  DYNAMIC_FORM_BUTTON_TYPES,
+  DynamicFormControlType,
+  MultiSelectFormControl
+  } from './../dynamic-form/dynamic-form.models';
 import { Component, OnInit } from '@angular/core';
-import { DatePickerFormControl, DynamicFormControlType, MultiSelectFormControl, CheckboxFormControl } from './../dynamic-form/dynamic-form.models';
 import { IDynamicFormConfig, SelectFormControl, TextFormControl } from '../dynamic-form/dynamic-form.models';
 import { Validators } from '@angular/forms';
 
@@ -139,7 +145,12 @@ export class FormWrapperComponent implements OnInit {
             dataIdParam: "CountryId"
           })
         ]
-      ]
+      ],
+      formButtons: [{
+        type: DYNAMIC_FORM_BUTTON_TYPES.SUBMIT
+      }, {
+        type: DYNAMIC_FORM_BUTTON_TYPES.CANCEL,
+      }]
     };
   }
 
