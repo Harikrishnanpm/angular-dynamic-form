@@ -1,13 +1,13 @@
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject } from 'rxjs';
+
+import { IDynamicFormConfig, SelectFormControl, TextFormControl } from '../dynamic-form/dynamic-form.models';
 import {
   CheckboxFormControl,
-  DatePickerFormControl,
   DYNAMIC_FORM_BUTTON_TYPES,
   DynamicFormControlType,
-  MultiSelectFormControl
+  IDynamicFormControlUpdateDataModel,
 } from './../dynamic-form/dynamic-form.models';
-import { Component, OnInit } from '@angular/core';
-import { IDynamicFormConfig, SelectFormControl, TextFormControl } from '../dynamic-form/dynamic-form.models';
-import { Validators } from '@angular/forms';
 
 interface ICountry {
   CountryId: number;
@@ -19,9 +19,10 @@ interface ICountry {
   templateUrl: './form-wrapper.component.html',
   styleUrls: ['./form-wrapper.component.sass']
 })
-export class FormWrapperComponent implements OnInit {
+export class FormWrapperComponent implements OnInit, OnDestroy {
 
   public dynamicFormConfig: IDynamicFormConfig;
+  public formControlUpdateSubject = new Subject<IDynamicFormControlUpdateDataModel<any, any>>();
   constructor() { }
 
   ngOnInit() {
@@ -33,6 +34,7 @@ export class FormWrapperComponent implements OnInit {
       CountryName: 'Sri Lanka'
     }];
     this.dynamicFormConfig = {
+      controlUpdateObservable: this.formControlUpdateSubject,
       controls: [
         [
           new TextFormControl({
@@ -152,6 +154,24 @@ export class FormWrapperComponent implements OnInit {
         type: DYNAMIC_FORM_BUTTON_TYPES.CANCEL,
       }]
     };
+  }
+
+  public ngOnDestroy() {
+    this.formControlUpdateSubject.unsubscribe();
+  }
+
+  public updateChildForm() {
+    this.formControlUpdateSubject.next({
+      key: 'test6',
+      type: DynamicFormControlType.select,
+      newOptions: [{
+        CountryId: 1,
+        CountryName: 'AUS'
+      }, {
+        CountryId: 2,
+        CountryName: 'USA'
+      }]
+    });
   }
 
   public onFormSubmit(formData: any) {

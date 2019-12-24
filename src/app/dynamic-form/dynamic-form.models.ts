@@ -1,3 +1,5 @@
+import { Subject } from 'rxjs';
+
 export interface IDictionary {
   [key: string]: string;
 }
@@ -11,7 +13,6 @@ export enum DynamicFormControlType {
   datePicker,
   dateRangePicker
 }
-
 
 export const DYNAMIC_FORM_VALIDATION_TYPES = {
   MIN: 'min',
@@ -51,11 +52,19 @@ interface IDynamicFormControlOption<T> {
   isDisabled?: boolean;
   isRequired?: boolean;
   validation?: IDynamicFormValidationObject;
+  onChange?: () => void;
 }
 
 interface IDateRangeValueModel {
   form: string;
   to: string;
+}
+
+export interface IDynamicFormControlUpdateDataModel<T, U> {
+  key: string;
+  type: DynamicFormControlType;
+  newValue?: T;
+  newOptions?: U[];
 }
 
 
@@ -70,6 +79,14 @@ interface IDynamicDateFormControlOption<T> extends IDynamicFormControlOption<T> 
 }
 
 
+/**
+ *
+ *
+ * @export
+ * @class DynamicFormControlBase
+ * @implements {IDynamicFormControlOption<T>}
+ * @template T
+ */
 export class DynamicFormControlBase<T> implements IDynamicFormControlOption<T> {
 
   public value: T;
@@ -77,6 +94,7 @@ export class DynamicFormControlBase<T> implements IDynamicFormControlOption<T> {
   public label: string;
   public isDisabled: boolean;
   public isRequired: boolean;
+  public onChange: () => any;
   public type: DynamicFormControlType;
   public validation: IDynamicFormValidationObject;
 
@@ -85,12 +103,23 @@ export class DynamicFormControlBase<T> implements IDynamicFormControlOption<T> {
     this.key = option.key;
     this.value = option.value;
     this.label = option.label;
+    this.onChange = option.onChange;
     this.isDisabled = option.isDisabled;
     this.isRequired = option.isRequired;
     this.validation = option.validation;
   }
 }
 
+/**
+ *
+ *
+ * @export
+ * @class DynamicFormControlSelect
+ * @extends {DynamicFormControlBase<T>}
+ * @implements {IDynamicSelectFormControlOption<T, U>}
+ * @template T
+ * @template U
+ */
 export class DynamicFormControlSelect<T, U> extends DynamicFormControlBase<T> implements IDynamicSelectFormControlOption<T, U> {
   data: U[];
   dataIdParam: string;
@@ -103,6 +132,15 @@ export class DynamicFormControlSelect<T, U> extends DynamicFormControlBase<T> im
   }
 }
 
+/**
+ *
+ *
+ * @export
+ * @class DynamicFormControlDate
+ * @extends {DynamicFormControlBase<T>}
+ * @implements {IDynamicDateFormControlOption<T>}
+ * @template T
+ */
 export class DynamicFormControlDate<T> extends DynamicFormControlBase<T> implements IDynamicDateFormControlOption<T> {
   dateFormat: string;
   constructor(option: IDynamicDateFormControlOption<T>, type: DynamicFormControlType) {
@@ -111,12 +149,26 @@ export class DynamicFormControlDate<T> extends DynamicFormControlBase<T> impleme
   }
 }
 
+/**
+ *
+ *
+ * @export
+ * @class TextFormControl
+ * @extends {DynamicFormControlBase<string>}
+ */
 export class TextFormControl extends DynamicFormControlBase<string> {
   constructor(option: IDynamicFormControlOption<string>) {
     super(option, DynamicFormControlType.text);
   }
 }
 
+/**
+ *
+ *
+ * @export
+ * @class TextAreaFormControl
+ * @extends {DynamicFormControlBase<string>}
+ */
 export class TextAreaFormControl extends DynamicFormControlBase<string> {
   constructor(option: IDynamicFormControlOption<string>) {
     super(option, DynamicFormControlType.textArea);
@@ -135,24 +187,53 @@ export class SelectFormControl<T> extends DynamicFormControlSelect<string, T> {
 //   }
 // }
 
+/**
+ *
+ *
+ * @export
+ * @class MultiSelectFormControl
+ * @extends {DynamicFormControlSelect<string[], T>}
+ * @template T
+ */
 export class MultiSelectFormControl<T> extends DynamicFormControlSelect<string[], T> {
   constructor(option: IDynamicSelectFormControlOption<string[], T>) {
     super(option, DynamicFormControlType.multiSelect);
   }
 }
 
+/**
+ *
+ *
+ * @export
+ * @class CheckboxFormControl
+ * @extends {DynamicFormControlBase<boolean>}
+ */
 export class CheckboxFormControl extends DynamicFormControlBase<boolean> {
   constructor(option: IDynamicFormControlOption<boolean>) {
     super(option, DynamicFormControlType.checkbox);
   }
 }
 
+/**
+ *
+ *
+ * @export
+ * @class DatePickerFormControl
+ * @extends {DynamicFormControlDate<string>}
+ */
 export class DatePickerFormControl extends DynamicFormControlDate<string> {
   constructor(option: IDynamicDateFormControlOption<string>) {
     super(option, DynamicFormControlType.datePicker);
   }
 }
 
+/**
+ *
+ *
+ * @export
+ * @class DateRangePickerFormControl
+ * @extends {DynamicFormControlDate<IDateRangeValueModel>}
+ */
 export class DateRangePickerFormControl extends DynamicFormControlDate<IDateRangeValueModel> {
   constructor(option: IDynamicDateFormControlOption<IDateRangeValueModel>) {
     super(option, DynamicFormControlType.dateRangePicker);
@@ -160,10 +241,11 @@ export class DateRangePickerFormControl extends DynamicFormControlDate<IDateRang
 }
 
 export interface IDynamicFormConfig {
+  controlUpdateObservable: Subject<IDynamicFormControlUpdateDataModel<any, any>>;
   controls: any;
   formButtons: {
     type: string;
-    onClick?: any;
+    onClick?: () => any;
   }[];
   // (TextFormControl | SelectFormControl<any> | MultiSelectFormControl<any> | CheckboxFormControl
   // | DatePickerFormControl | DateRangePickerFormControl)[][];

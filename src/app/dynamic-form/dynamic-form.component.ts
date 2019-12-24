@@ -1,25 +1,15 @@
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
 import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
-import {
-  DatePickerFormControl,
+  DYNAMIC_FORM_VALIDATION_TYPES,
   DynamicFormControlBase,
   DynamicFormControlType,
   IDictionary,
   IDynamicFormConfig,
-  DYNAMIC_FORM_VALIDATION_TYPES,
+  IDynamicFormControlUpdateDataModel,
   IDynamicFormCustomValidation,
 } from './dynamic-form.models';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators
-} from '@angular/forms';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -41,19 +31,14 @@ export class DynamicFormComponent implements OnInit {
   constructor(private formBuilder: FormBuilder) { }
 
   public ngOnInit() {
-    const formGroup: any = {};
-    for (const rows of this.formConfig.controls) {
-      for (const cell of rows) {
-        formGroup[cell.key] = [{
-          value: cell.value,
-          disabled: cell.isDisabled
-        }, {
-          validators: this.getFieldValidators(cell),
-          updateOn: 'blur'
-        }];
-      }
-    }
-    this.dynamicForm = this.formBuilder.group(formGroup);
+    this.buildDynamicReactiveFormObjectModel();
+    this.subscribeFormControlChangeFromParent();
+  }
+
+  public updateFormControlValue(formControlName: string, value: any) {
+    this.dynamicForm.patchValue({
+      [formControlName]: value
+    });
   }
 
 
@@ -69,6 +54,34 @@ export class DynamicFormComponent implements OnInit {
         }
       }
     }
+  }
+
+  private buildDynamicReactiveFormObjectModel() {
+    const formGroup: any = {};
+    for (const rows of this.formConfig.controls) {
+      for (const cell of rows) {
+        formGroup[cell.key] = [{
+          value: cell.value,
+          disabled: cell.isDisabled
+        }, {
+          validators: this.getFieldValidators(cell),
+          updateOn: 'blur'
+        }];
+      }
+    }
+    this.dynamicForm = this.formBuilder.group(formGroup);
+  }
+
+  private subscribeFormControlChangeFromParent() {
+    this.formConfig.controlUpdateObservable.subscribe({
+      next: (data: IDynamicFormControlUpdateDataModel<any, any>) => {
+        if (typeof data.newValue !== 'undefined') {
+          this.dynamicForm.patchValue({
+            [data.key]: data.newValue
+          });
+        }
+      }
+    });
   }
 
   private getFieldValidators(control: DynamicFormControlBase<any>) {
