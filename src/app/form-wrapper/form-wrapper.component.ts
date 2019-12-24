@@ -4,7 +4,7 @@ import {
   DYNAMIC_FORM_BUTTON_TYPES,
   DynamicFormControlType,
   MultiSelectFormControl
-  } from './../dynamic-form/dynamic-form.models';
+} from './../dynamic-form/dynamic-form.models';
 import { Component, OnInit } from '@angular/core';
 import { IDynamicFormConfig, SelectFormControl, TextFormControl } from '../dynamic-form/dynamic-form.models';
 import { Validators } from '@angular/forms';
@@ -37,7 +37,7 @@ export class FormWrapperComponent implements OnInit {
         [
           new TextFormControl({
             label: 'control3',
-            value: "",
+            value: '',
             key: 'test3',
             isDisabled: false
           }),
@@ -48,20 +48,20 @@ export class FormWrapperComponent implements OnInit {
           }),
           new TextFormControl({
             label: 'control3',
-            value: "",
+            value: '',
             key: 'test90',
             isDisabled: false
           }),
           new TextFormControl({
             label: 'control3',
-            value: "",
+            value: '',
             key: 'test56'
           })
         ],
         [
           new TextFormControl({
             label: 'control4',
-            value: "234234",
+            value: '234234',
             key: 'test4'
           }),
           new TextFormControl({
@@ -74,14 +74,14 @@ export class FormWrapperComponent implements OnInit {
             value: null,
             key: 'test6',
             data: countries,
-            dataValueParam: "CountryName",
-            dataIdParam: "CountryId"
+            dataValueParam: 'CountryName',
+            dataIdParam: 'CountryId'
           })
         ],
         [
           new TextFormControl({
             label: 'control4',
-            value: "234234",
+            value: '234234',
             key: 'test7'
           }),
           new TextFormControl({
@@ -93,7 +93,7 @@ export class FormWrapperComponent implements OnInit {
         [
           new TextFormControl({
             label: 'control4',
-            value: "234234",
+            value: '234234',
             key: 'test9'
           }),
           new SelectFormControl({
@@ -101,14 +101,14 @@ export class FormWrapperComponent implements OnInit {
             value: null,
             key: 'test10',
             data: countries,
-            dataValueParam: "CountryName",
-            dataIdParam: "CountryId"
+            dataValueParam: 'CountryName',
+            dataIdParam: 'CountryId'
           })
         ],
         [
           new TextFormControl({
             label: 'control4',
-            value: "234234",
+            value: '234234',
             key: 'test11'
           }),
           new TextFormControl({
@@ -121,14 +121,14 @@ export class FormWrapperComponent implements OnInit {
             value: null,
             key: 'test13',
             data: countries,
-            dataValueParam: "CountryName",
-            dataIdParam: "CountryId"
+            dataValueParam: 'CountryName',
+            dataIdParam: 'CountryId'
           })
         ],
         [
           new TextFormControl({
             label: 'control4',
-            value: "234234",
+            value: '234234',
             key: 'test14'
           }),
           new TextFormControl({
@@ -141,8 +141,8 @@ export class FormWrapperComponent implements OnInit {
             value: null,
             key: 'test16',
             data: countries,
-            dataValueParam: "CountryName",
-            dataIdParam: "CountryId"
+            dataValueParam: 'CountryName',
+            dataIdParam: 'CountryId'
           })
         ]
       ],
@@ -154,7 +154,7 @@ export class FormWrapperComponent implements OnInit {
     };
   }
 
-  public onFormSubmit(formData) {
+  public onFormSubmit(formData: any) {
     debugger
   }
 }
