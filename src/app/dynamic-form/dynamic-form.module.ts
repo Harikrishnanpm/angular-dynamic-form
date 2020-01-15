@@ -1,19 +1,23 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { DynamicFormComponent } from './dynamic-form.component';
-import { ErrorMessageComponent } from './error-message/error-message.component';
+import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import {
+  MAT_DATE_FORMATS,
   MatButtonModule,
+  MatCheckboxModule,
   MatDatepickerModule,
   MatFormFieldModule,
   MatInputModule,
-  MatNativeDateModule,
   MatOptionModule,
+  MatRadioModule,
   MatSelectModule,
-  MatCheckboxModule
 } from '@angular/material';
-import { NgModule } from '@angular/core';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
+import { BrowserModule } from '@angular/platform-browser';
+import { NgxMaskModule } from 'ngx-mask';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { ReactiveFormsModule } from '@angular/forms';
+
+import { DynamicFormComponent } from './dynamic-form.component';
+import { ErrorMessageComponent } from './error-message/error-message.component';
 
 @NgModule({
   declarations: [
@@ -27,12 +31,30 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatOptionModule,
     MatSelectModule,
     MatInputModule,
+    MatRadioModule,
     MatButtonModule,
     MatCheckboxModule,
     MatDatepickerModule,
-    MatNativeDateModule,
+    MatMomentDateModule,
     NgxMatSelectSearchModule,
-    ReactiveFormsModule
-  ]
+    ReactiveFormsModule,
+    NgxMaskModule.forRoot()
+  ],
+  providers: [
+    {
+      provide: MAT_DATE_FORMATS,
+      useValue: {
+        parse: {
+          dateInput: ['l', 'LL'],
+        },
+        display: {
+          dateInput: 'L',
+          monthYearLabel: 'MMM YYYY',
+          dateA11yLabel: 'LL',
+          monthYearA11yLabel: 'MMMM YYYY'
+        },
+      },
+    },
+  ],
 })
 export class DynamicFormModule { }

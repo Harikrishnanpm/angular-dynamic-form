@@ -1,7 +1,9 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
 
 import {
+  DYNAMIC_FORM_ACTION_FROM_PARENT,
   DYNAMIC_FORM_VALIDATION_TYPES,
   DynamicFormControlBase,
   DynamicFormControlType,
@@ -9,6 +11,7 @@ import {
   IDynamicFormConfig,
   IDynamicFormControlUpdateDataModel,
   IDynamicFormCustomValidation,
+  IDynamicFormValidationObject,
 } from './dynamic-form.models';
 
 @Component({
@@ -16,23 +19,30 @@ import {
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.css']
 })
-export class DynamicFormComponent implements OnInit {
+export class DynamicFormComponent implements OnInit, OnDestroy {
   @Input() formConfig: IDynamicFormConfig;
+  @Input() hideErrors: boolean;
   @Output() formSubmit = new EventEmitter();
 
   public formRowCount: number;
   public dynamicForm: FormGroup;
   public formRowCellCountList: number[] = [];
   public formControlTypes = DynamicFormControlType;
-  public validationErrorMessages: {
-    [key: string]: IDictionary
-  } = {};
+  public selectSearchControl: IDictionary<any> = {};
+  public validationErrorMessages: IDictionary<IDictionary<string>> = {};
+  public selectOptionDictionary: IDictionary<any> = {};
+
+  private selectOptionDataValueParam: IDictionary<string> = {};
+  private selectOptionDictionaryMaster: IDictionary<any> = {};
+  private currentOpenSelectControlName: string;
+  private subscriptions: Subscription[] = [];
 
   constructor(private formBuilder: FormBuilder) { }
 
   public ngOnInit() {
     this.buildDynamicReactiveFormObjectModel();
     this.subscribeFormControlChangeFromParent();
+    this.subscribeFormActionFromParent();
   }
 
   /**
@@ -43,17 +53,42 @@ export class DynamicFormComponent implements OnInit {
     if (this.dynamicForm.valid) {
       this.formSubmit.emit(this.dynamicForm.value);
     } else {
-      let control;
-      // If form is not valid, checking each field which is dirty.
-      for (const field in this.dynamicForm.controls) {
-        if (field) {
-          control = this.dynamicForm.get(field);
-          control.markAsTouched({ onlySelf: true });
-        }
-      }
+      this.validateFormControls();
     }
   }
 
+  public ngOnDestroy() {
+    this.subscriptions.forEach(subscription => {
+      subscription.unsubscribe();
+    });
+  }
+
+  public formControlValueChange(key: string) {
+    if (this.formConfig.controlValueChangeObservable) {
+      this.formConfig.controlValueChangeObservable.next({
+        key,
+        value: this.dynamicForm.value[key]
+      });
+    }
+  }
+
+  public toggleSelect(isOpen: string, formControlName: string) {
+    if (!isOpen && formControlName) {
+      this.filterSelectDropDowns('', this.currentOpenSelectControlName);
+    }
+    this.currentOpenSelectControlName = isOpen ? formControlName : '';
+  }
+
+  private validateFormControls() {
+    let control;
+    // If form is not valid, checking each field which is dirty.
+    for (const field in this.dynamicForm.controls) {
+      if (field) {
+        control = this.dynamicForm.get(field);
+        control.markAsTouched({ onlySelf: true });
+      }
+    }
+  }
 
   /**
    * Building reactive form object model by using model from parent.
@@ -69,16 +104,35 @@ export class DynamicFormComponent implements OnInit {
           disabled: cell.isDisabled
         }, {
           validators: this.getFieldValidators(cell),
-          updateOn: 'blur'
+          // updateOn: 'blur'
         }];
+        if ([DynamicFormControlType.select, DynamicFormControlType.multiSelect].includes(cell.type)) {
+          this.selectOptionDictionary[cell.key] = cell.data;
+          this.selectOptionDictionaryMaster[cell.key] = cell.data;
+          this.selectOptionDataValueParam[cell.key] = cell.dataValueParam;
+          this.selectSearchControl[cell.key] = new FormControl();
+          const subscription = this.selectSearchControl[cell.key].valueChanges
+            .subscribe((searchString: string) => {
+              this.filterSelectDropDowns(searchString, this.currentOpenSelectControlName);
+            });
+          this.subscriptions.push(subscription);
+        }
       }
     }
     this.dynamicForm = this.formBuilder.group(formGroup);
   }
 
+  private filterSelectDropDowns(searchString: string, selectControlKey: string) {
+    const searchStringLower = searchString.toLowerCase();
+    this.selectOptionDictionary[selectControlKey] =
+      searchString ? this.selectOptionDictionaryMaster[selectControlKey]
+        .filter(data => data[this.selectOptionDataValueParam[selectControlKey]].toLowerCase()
+          .indexOf(searchStringLower) > -1)
+        : this.selectOptionDictionaryMaster[selectControlKey];
+  }
+
   /**
    * Handle event emit form the parent for updating form control value or drop-down options.
-   * @private
    * @memberof DynamicFormComponent
    */
   private subscribeFormControlChangeFromParent() {
@@ -90,8 +144,38 @@ export class DynamicFormComponent implements OnInit {
             [data.key]: data.newValue
           });
         }
+        if (data.newOptions) {
+          this.selectOptionDictionary[data.key] = data.newOptions;
+          if ([DynamicFormControlType.select, DynamicFormControlType.multiSelect].includes(data.type)) {
+            this.selectOptionDictionaryMaster[data.key] = data.newOptions;
+          }
+        }
+        if (data.validations) {
+          this.dynamicForm.controls[data.key].setValidators(this.getFieldValidators({
+            key: data.key,
+            validation: data.validations
+          }));
+        } else {
+          this.dynamicForm.controls[data.key].clearValidators();
+        }
+        this.dynamicForm.controls[data.key].updateValueAndValidity();
       }
     });
+  }
+
+  public subscribeFormActionFromParent() {
+    this.formConfig.formActionSubject
+      .subscribe(action => {
+        if (action === DYNAMIC_FORM_ACTION_FROM_PARENT.SUBMIT) {
+          this.validateFormControls();
+          this.formConfig.formSubmitSubject.next({
+            isValid: this.dynamicForm.valid,
+            formData: this.dynamicForm.value
+          });
+        } else if (action === DYNAMIC_FORM_ACTION_FROM_PARENT.CLEAR) {
+          this.dynamicForm.reset();
+        }
+      });
   }
 
   /**
@@ -99,12 +183,13 @@ export class DynamicFormComponent implements OnInit {
    * array passed from the parent. There are two type of validations can be passed ready made angular
    * validations (eg, required, min, max, etc...) and custom validation functions. Here custom and angular
    * own validations are processed separately and pushed to the same validator array.
-   * @private
    * @param {DynamicFormControlBase<any>} control
-   * @returns
    * @memberof DynamicFormComponent
    */
-  private getFieldValidators(control: DynamicFormControlBase<any>) {
+  private getFieldValidators(control: {
+    validation: IDynamicFormValidationObject,
+    key: string;
+  }) {
     const formValidatorList = [];
     const controlKey = control.key;
     this.validationErrorMessages[controlKey] = {};
@@ -123,7 +208,7 @@ export class DynamicFormComponent implements OnInit {
           } else if (control.validation[key]) {
             // Angular own validations.
             this.validationErrorMessages[controlKey][key.toLowerCase()] = this.buildValidationMessage(key, control.validation[key]);
-            formValidatorList.push(key === DYNAMIC_FORM_VALIDATION_TYPES.REQUIRED ?
+            formValidatorList.push([DYNAMIC_FORM_VALIDATION_TYPES.REQUIRED, DYNAMIC_FORM_VALIDATION_TYPES.EMAIL].includes(key) ?
               Validators[key] : Validators[key](control.validation[key]));
           }
         }
@@ -135,7 +220,6 @@ export class DynamicFormComponent implements OnInit {
 
   /**
    * Building validation messages for angular own validations.
-   * @private
    * @param {string} type
    * @param {*} value
    * @returns {string}

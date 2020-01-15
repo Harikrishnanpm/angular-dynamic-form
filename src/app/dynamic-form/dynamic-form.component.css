@@ -2,16 +2,6 @@
   width: 100%;
 }
 
-.dynamic-form .row {
-  display: flex;
-}
-
-.dynamic-form .row div {
-  margin-right: 10px;
-  flex: 1;
-}
-
 .dynamic-form .row div mat-form-field {
   width: 100% !important;
 }
-

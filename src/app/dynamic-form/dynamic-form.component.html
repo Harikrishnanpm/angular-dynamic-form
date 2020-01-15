@@ -1,68 +1,105 @@
 <form [formGroup]="dynamicForm" class="dynamic-form" (ngSubmit)="onFormSubmit()">
-  <div class="row" *ngFor="let rowConfig of formConfig.controls">
-    <div *ngFor="let cellConfig of rowConfig">
-      <!-- SINGLE SELECT -->
-      <mat-form-field *ngIf="cellConfig.type == formControlTypes.select" class="example-full-width">
-        <mat-label>{{cellConfig.label}}</mat-label>
-        <mat-select [placeholder]="cellConfig.label" #singleSelect>
-          <mat-option>
-            <ngx-mat-select-search placeholderLabel="Search..." noEntriesFoundLabel="No Result Found!"
-              [formControlName]="cellConfig.key"></ngx-mat-select-search>
-          </mat-option>
-          <mat-option *ngFor="let data of cellConfig.data" [value]="data[cellConfig.dataIdParam]">
-            {{data[cellConfig.dataValueParam]}}
-          </mat-option>
-        </mat-select>
-        <mat-error>
-          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"
-            [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
-        </mat-error>
-      </mat-form-field>
+  <div class="row">
+    <ng-container *ngFor="let rowConfig of formConfig.controls">
+      <ng-container *ngFor="let cellConfig of rowConfig">
+        <!-- SINGLE SELECT -->
+        <div class="col-md-4" *ngIf="cellConfig.type == formControlTypes.select">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{cellConfig.label}}</mat-label>
+            <mat-select [formControlName]="cellConfig.key" (openedChange)="toggleSelect($event, cellConfig.key)"
+              [placeholder]="cellConfig.label" #singleSelect (selectionChange)="formControlValueChange(cellConfig.key)">
+              <mat-option>
+                <ngx-mat-select-search [formControl]="selectSearchControl[cellConfig.key]" placeholderLabel="Search..."
+                  noEntriesFoundLabel="No Result Found!"></ngx-mat-select-search>
+              </mat-option>
+              <mat-option>-- None --</mat-option>
+              <mat-option *ngFor="let data of selectOptionDictionary[cellConfig.key]"
+                [value]="data[cellConfig.dataIdParam]">
+                {{data[cellConfig.dataValueParam]}}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"
+                [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <!-- MULTIPLE SELECT -->
+        <div class="col-md-4" *ngIf="cellConfig.type == formControlTypes.multiSelect">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{cellConfig.label}}</mat-label>
+            <mat-select [formControlName]="cellConfig.key" multiple
+              (openedChange)="toggleSelect($event, cellConfig.key)"
+              (selectionChange)="formControlValueChange(cellConfig.key)">
+              <mat-option>
+                <ngx-mat-select-search placeholderLabel="Search..." noEntriesFoundLabel="No Result Found!"
+                  [formControl]="selectSearchControl[cellConfig.key]"></ngx-mat-select-search>
+              </mat-option>
+              <mat-option *ngFor="let data of selectOptionDictionary[cellConfig.key]"
+                [value]="data[cellConfig.dataIdParam]">
+                {{data[cellConfig.dataValueParam]}}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"
+                [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
+            </mat-error>
+          </mat-form-field>
+        </div>
 
-      <!-- MULTIPLE SELECT -->
-      <mat-form-field *ngIf="cellConfig.type == formControlTypes.multiSelect" class="example-full-width">
-        <mat-label>{{cellConfig.label}}</mat-label>
-        <mat-select [formControlName]="cellConfig.key" multiple>
-          <mat-option>
-            <ngx-mat-select-search placeholderLabel="Search..." noEntriesFoundLabel="No Result Found!"
-              [formControlName]="cellConfig.key"></ngx-mat-select-search>
-          </mat-option>
-          <mat-option *ngFor="let data of cellConfig.data" [value]="data[cellConfig.dataIdParam]">
-            {{data[cellConfig.dataValueParam]}}
-          </mat-option>
-        </mat-select>
-        <mat-error>
-          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"
-            [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
-        </mat-error>
-      </mat-form-field>
 
 
-      <!-- TEXT INPUT -->
-      <mat-form-field *ngIf="cellConfig.type == formControlTypes.text" class="example-full-width">
-        <mat-label>{{cellConfig.label}}</mat-label>
-        <input matInput [id]="cellConfig.key" [formControlName]="cellConfig.key" [placeholder]="cellConfig.label">
-        <mat-error>
-          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"
-            [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
-        </mat-error>
-      </mat-form-field>
+        <!-- TEXT INPUT -->
+        <div class="col-md-4" *ngIf="cellConfig.type == formControlTypes.text">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{cellConfig.label}}</mat-label>
+            <input matInput [id]="cellConfig.key" [autocomplete]="cellConfig.autocomplete" (change)="formControlValueChange(cellConfig.key)"
+              [formControlName]="cellConfig.key" [placeholder]="cellConfig.placeholder" [mask]="cellConfig.maskString">
+            <mat-error>
+              <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"
+                [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
+            </mat-error>
+          </mat-form-field>
+        </div>
 
-      <!-- DATE PICKER -->
-      <mat-form-field class="example-full-width date-picker" *ngIf="cellConfig.type == formControlTypes.datePicker">
-        <mat-label>{{cellConfig.label}}</mat-label>
-        <input matInput [formControlName]="cellConfig.key" [matDatepicker]="picker" placeholder="Choose a date">
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-        <mat-error>
-          <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"
-            [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
-        </mat-error>
-      </mat-form-field>
-      <mat-checkbox [formControlName]="cellConfig.key" *ngIf="cellConfig.type == formControlTypes.checkbox">{{cellConfig.label}}</mat-checkbox>
 
-      <div *ngIf="!cellConfig.type"></div>
-    </div>
+        <!-- TEXT AREA -->
+        <div class="col-md-4" *ngIf="cellConfig.type == formControlTypes.textArea">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{cellConfig.label}}</mat-label>
+            <textarea matInput [id]="cellConfig.key" [formControlName]="cellConfig.key" [placeholder]="cellConfig.label"
+              (change)="formControlValueChange(cellConfig.key)"></textarea>
+            <mat-error>
+              <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"
+                [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+
+        <!-- DATE PICKER -->
+        <div class="col-md-4" *ngIf="cellConfig.type == formControlTypes.datePicker">
+          <mat-form-field class="example-full-width date-picker">
+            <mat-label>{{cellConfig.label}}</mat-label>
+            <input matInput [formControlName]="cellConfig.key" (change)="formControlValueChange(cellConfig.key)"
+              [matDatepicker]="picker" [placeholder]="cellConfig.placeholder" [autocomplete]="cellConfig.autocomplete">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker [touchUi]="cellConfig.isTouchUi" #picker></mat-datepicker>
+            <mat-error>
+              <app-error-message [dynamicFormControl]="dynamicForm.get([cellConfig.key])"
+                [errorMessages]="validationErrorMessages[cellConfig.key]"></app-error-message>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <mat-checkbox [formControlName]="cellConfig.key" *ngIf="cellConfig.type == formControlTypes.checkbox">
+          {{cellConfig.label}}</mat-checkbox>
+
+        <div *ngIf="!cellConfig.type"></div>
+      </ng-container>
+    </ng-container>
   </div>
-  <button mat-raised-button color="primary">Submit</button>
+  <div style="text-align: right;" *ngIf='formConfig.formButtons && formConfig.formButtons.length'>
+    <button mat-raised-button color="primary">Submit</button>
+  </div>
 </form>
