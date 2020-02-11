@@ -1,0 +1,370 @@
+<form [formGroup]="dynamicForm"
+      class="dynamic-form"
+      (ngSubmit)="onFormSubmit()">
+  <div *ngIf="isLoaded">
+    <ng-container *ngFor="let rowConfig of formControlArray; let rowIndex = index">
+      <div class="row">
+        <div class="col-md"
+             style="display: flex;position: relative;"
+             *ngFor="let cellConfig of rowConfig; let cellIndex = index">
+          <!-- TEXT INPUT -->
+          <div class="form-group full-width"
+               *ngIf="cellConfig.type == formControlTypes.text">
+            <label [ngClass]="{'required': cellConfig.isRequired}">{{cellConfig.label}}</label>
+            <div *ngIf="!cellConfig.isAddable">
+              <div *ngFor="let control of cellConfig.controls">
+                <input [id]="control.key"
+                       [autocomplete]="control.autocomplete"
+                       (change)="formControlValueChange(control.key, internalControlType.normal)"
+                       [formControlName]="control.key"
+                       [placeholder]="control.placeholder"
+                       [specialCharacters]="control.maskAllowedSpecialCharacters"
+                       [mask]="control.maskString"
+                       class="form-control" />
+                <app-error-message [form]="dynamicForm"
+                                   [keys]="[cellConfig.parentKey]"
+                                   [errorMessages]="validationErrorMessages"></app-error-message>
+              </div>
+            </div>
+            <div *ngIf="cellConfig.isAddable"
+                 [formArrayName]="cellConfig.parentKey">
+              <div [formGroupName]="cIndex"
+                   style="display: flex;"
+                   *ngFor="let control of cellConfig.controls;let cIndex = index">
+                <input [id]="cellConfig.parentKey+(cIndex+1)"
+                       [autocomplete]="control.autocomplete"
+                       (change)="formControlValueChange(cellConfig.parentKey,internalControlType.addable, cIndex)"
+                       [formControlName]="cellConfig.parentKey"
+                       [placeholder]="control.placeholder"
+                       [specialCharacters]="control.maskAllowedSpecialCharacters"
+                       [mask]="control.maskString"
+                       class="form-control" />
+                <div *ngIf="control.isAddable">
+                  <a *ngIf="!control.showControlRemove"
+                     type="button"
+                     class="btn"
+                     style="color: green;"
+                     (click)="addFormControl(control, cellConfig.parentKey, rowIndex, cellIndex)"><i
+                       class="fa fa-plus"></i></a>
+                  <a *ngIf="control.showControlRemove"
+                     type="button"
+                     class="btn"
+                     style="color: red;"
+                     (click)="removeFormControl(cellConfig.parentKey,cellConfig.parentKey+(cIndex+1), rowIndex, cellIndex, cIndex)"><i
+                       class="fa fa-minus"></i></a>
+                </div>
+                <app-error-message [form]="dynamicForm"
+                                   [keys]="[cellConfig.parentKey, cIndex, cellConfig.parentKey]"
+                                   [errorMessages]="validationErrorMessages"></app-error-message>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="form-group full-width"
+               *ngIf="cellConfig.type == formControlTypes.datePicker">
+            <label [ngClass]="{'required': cellConfig.isRequired}">{{cellConfig.label}}</label>
+            <div *ngIf="!cellConfig.isAddable">
+              <div *ngFor="let control of cellConfig.controls">
+                <input type="text"
+                       placeholder="Datepicker"
+                       class="form-control"
+                       bsDatepicker
+                       [placeholder]="control.placeholder"
+                       [formControlName]="cellConfig.parentKey"
+                       [bsConfig]="{ isAnimated: true, dateInputFormat: control.dateFormat }"
+                       [minDate]="control.dateRange.from"
+                       [maxDate]="control.dateRange.to">
+                <app-error-message [form]="dynamicForm"
+                                   [keys]="[cellConfig.parentKey]"
+                                   [errorMessages]="validationErrorMessages"></app-error-message>
+              </div>
+            </div>
+            <div *ngIf="cellConfig.isAddable"
+                 [formArrayName]="cellConfig.parentKey">
+              <div [formGroupName]="cIndex"
+                   style="display: flex;"
+                   *ngFor="let control of cellConfig.controls;let cIndex = index">
+                <input type="text"
+                       placeholder="Datepicker"
+                       class="form-control"
+                       [formControlName]="cellConfig.parentKey"
+                       bsDatepicker
+                       [placeholder]="control.placeholder"
+                       [bsConfig]="{ isAnimated: true }"
+                       [minDate]="control.dateRange.from"
+                       [maxDate]="control.dateRange.to">
+                <div *ngIf="control.isAddable">
+                  <a *ngIf="!control.showControlRemove"
+                     type="button"
+                     class="btn"
+                     style="color: green;"
+                     (click)="addFormControl(control, cellConfig.parentKey, rowIndex, cellIndex)"><i
+                       class="fa fa-plus"></i></a>
+                  <a *ngIf="control.showControlRemove"
+                     type="button"
+                     class="btn"
+                     style="color: red;"
+                     (click)="removeFormControl(cellConfig.parentKey,cellConfig.parentKey+(cIndex+1), rowIndex, cellIndex, cIndex)"><i
+                       class="fa fa-minus"></i></a>
+                </div>
+                <app-error-message [form]="dynamicForm"
+                                   [keys]="[cellConfig.parentKey, cIndex, cellConfig.parentKey]"
+                                   [errorMessages]="validationErrorMessages"></app-error-message>
+              </div>
+            </div>
+
+          </div>
+
+
+
+          <!-- TEXT AREA -->
+          <div class="full-width form-group"
+               *ngIf="cellConfig.type == formControlTypes.textArea">
+            <label [ngClass]="{'required': cellConfig.isRequired}">{{cellConfig.label}}</label>
+            <div *ngIf="cellConfig.isAddable"
+                 [formArrayName]="cellConfig.parentKey">
+              <div style="display: flex;"
+                   [formGroupName]="cIndex"
+                   *ngFor="let control of cellConfig.controls;let cIndex = index">
+                <textarea class="form-control"
+                          [id]="cellConfig.parentKey+(cIndex+1)"
+                          [formControlName]="cellConfig.parentKey"
+                          [placeholder]="control.label"
+                          (change)="formControlValueChange(control.key, internalControlType.addable, cIndex)"></textarea>
+                <div *ngIf="control.isAddable">
+                  <a *ngIf="!control.showControlRemove"
+                     type="button"
+                     class="btn"
+                     style="color: green;"
+                     (click)="addFormControl(control, cellConfig.parentKey, rowIndex, cellIndex)"><i
+                       class="fa fa-plus"></i></a>
+                  <a *ngIf="control.showControlRemove"
+                     type="button"
+                     class="btn"
+                     style="color: red;"
+                     (click)="removeFormControl(cellConfig.parentKey,cellConfig.parentKey+(cIndex+1), rowIndex, cellIndex, cIndex)"><i
+                       class="fa fa-minus"></i></a>
+                </div>
+                <app-error-message [form]="dynamicForm"
+                                   [keys]="[cellConfig.parentKey, cIndex, cellConfig.parentKey]"
+                                   [errorMessages]="validationErrorMessages"></app-error-message>
+              </div>
+            </div>
+            <div *ngIf="!cellConfig.isAddable">
+              <div *ngFor="let control of cellConfig.controls">
+                <textarea class="form-control"
+                          [id]="control.key"
+                          [formControlName]="control.key"
+                          [placeholder]="control.label"
+                          (change)="formControlValueChange(control.key, internalControlType.normal)"></textarea>
+                <app-error-message [form]="dynamicForm"
+                                   [keys]="[cellConfig.parentKey]"
+                                   [errorMessages]="validationErrorMessages"></app-error-message>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- SELECT -->
+          <div class="full-width form-group"
+               *ngIf="cellConfig.type == formControlTypes.select">
+            <label [ngClass]="{'required': cellConfig.isRequired}">{{cellConfig.label}}</label>
+            <div [formArrayName]="cellConfig.parentKey"
+                 *ngIf="cellConfig.isAddable">
+              <div style="display: flex;"
+                   [formGroupName]="cIndex"
+                   *ngFor="let control of cellConfig.controls;let cIndex = index">
+                <div class="full-width">
+                  <angular2-multiselect class="full-width"
+                                        [data]="selectOptionDictionary[cellConfig.parentKey]"
+                                        [settings]="dropDownSettingsDictionary[cellConfig.parentKey]"
+                                        (onSelect)="formControlValueChange(cellConfig.parentKey, internalControlType.addable, cIndex)"
+                                        (onDeSelect)="formControlValueChange(cellConfig.parentKey, internalControlType.addable, cIndex)"
+                                        (onDeSelectAll)="onDropDownDeselectAll(cellConfig.parentKey, internalControlType.addable, cIndex)"
+                                        [formControlName]="cellConfig.parentKey">
+                  </angular2-multiselect>
+                </div>
+                <div *ngIf="control.isAddable">
+                  <a *ngIf="!control.showControlRemove"
+                     type="button"
+                     class="btn"
+                     style="color: green;"
+                     (click)="addFormControl(control, cellConfig.parentKey, rowIndex, cellIndex)"><i
+                       class="fa fa-plus"></i></a>
+                  <a *ngIf="control.showControlRemove"
+                     type="button"
+                     class="btn"
+                     style="color: red;"
+                     (click)="removeFormControl(cellConfig.parentKey,cellConfig.parentKey+(cIndex+1), rowIndex, cellIndex, cIndex)"><i
+                       class="fa fa-minus"></i></a>
+                </div>
+                <app-error-message [form]="dynamicForm"
+                                   [keys]="[cellConfig.parentKey, cIndex, cellConfig.parentKey]"
+                                   [errorMessages]="validationErrorMessages"> </app-error-message>
+              </div>
+            </div>
+            <div *ngIf="!cellConfig.isAddable">
+              <div *ngFor="let control of cellConfig.controls">
+                <angular2-multiselect [data]="selectOptionDictionary[control.key]"
+                                      [settings]="dropDownSettingsDictionary[control.key]"
+                                      (onSelect)="formControlValueChange(control.key, internalControlType.normal)"
+                                      (onDeSelect)="formControlValueChange(control.key, internalControlType.normal)"
+                                      (onDeSelectAll)="onDropDownDeselectAll(control.key, internalControlType.normal)"
+                                      [formControlName]="control.key">
+                </angular2-multiselect>
+                <app-error-message [form]="dynamicForm"
+                                   [keys]="[cellConfig.parentKey]"
+                                   [errorMessages]="validationErrorMessages"></app-error-message>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!cellConfig.type"></div>
+          <div class="full-width form-group"
+               *ngIf="cellConfig.type == formControlTypes.combinationFormControl">
+            <label [ngClass]="{'required': cellConfig.isRequired}">{{cellConfig.label}}</label>
+
+            <div *ngIf="cellConfig.isAddable">
+              <div [formArrayName]="cellConfig.parentKey">
+                <div *ngFor="let combControlSet of cellConfig.controls; let combRowIndex=index"
+                     class="row">
+                  <div class="col-md"
+                       [formGroupName]="combRowIndex"
+                       *ngFor="let combControl of combControlSet.controls;">
+                    <div *ngIf="combControl.type == formControlTypes.text">
+                      <input [id]="combControlSet.key+'_'+ combControl.key+(combRowIndex+1)"
+                             [autocomplete]="combControl.autocomplete"
+                             (change)="formControlValueChange(combControl.key, internalControlType.addableAndCombination, combRowIndex, cellConfig.parentKey)"
+                             [formControlName]="combControl.key"
+                             [placeholder]="combControl.placeholder"
+                             [specialCharacters]="combControl.maskAllowedSpecialCharacters"
+                             [mask]="combControl.maskString"
+                             class="form-control">
+
+                      <app-error-message [form]="dynamicForm"
+                                         [keys]="[cellConfig.parentKey, combRowIndex, combControl.key]"
+                                         [errorMessages]="validationErrorMessages">
+                      </app-error-message>
+
+                    </div>
+
+                    <div *ngIf="combControl.type == formControlTypes.select">
+                      <angular2-multiselect [data]="selectOptionDictionary[combControlSet.key+'_'+ combControl.key]"
+                                            [settings]="dropDownSettingsDictionary[combControlSet.key+'_'+ combControl.key]"
+                                            (onSelect)="formControlValueChange(combControl.key, internalControlType.addableAndCombination, combRowIndex, cellConfig.parentKey)"
+                                            (onDeSelect)="formControlValueChange(combControl.key, internalControlType.addableAndCombination, combRowIndex, cellConfig.parentKey)"
+                                            (onDeSelectAll)="onDropDownDeselectAll(combControl.key, internalControlType.addableAndCombination, combRowIndex, cellConfig.parentKey)"
+                                            [formControlName]="combControl.key">
+                      </angular2-multiselect>
+                      <app-error-message [form]="dynamicForm"
+                                         [keys]="[cellConfig.parentKey, combRowIndex, combControl.key]"
+                                         [errorMessages]="validationErrorMessages">
+                      </app-error-message>
+                    </div>
+                    <div *ngIf="combControl.type == formControlTypes.datePicker">
+                      <input type="text"
+                             placeholder="Datepicker"
+                             class="form-control"
+                             bsDatepicker
+                             [placeholder]="combControl.placeholder"
+                             [formControlName]="combControl.key"
+                             [bsConfig]="{ isAnimated: true, dateInputFormat: combControl.dateFormat }"
+                             [minDate]="combControl.dateRange.from"
+                             [maxDate]="combControl.dateRange.to">
+                      <app-error-message [form]="dynamicForm"
+                                         [keys]="[cellConfig.parentKey, combRowIndex, combControl.key]"
+                                         [errorMessages]="validationErrorMessages">
+                      </app-error-message>
+                    </div>
+
+                  </div>
+                  <div *ngIf="combControlSet.isAddable"
+                       style="margin-left: -16px;margin-right: 16px;">
+                    <a *ngIf="!combControlSet.showControlRemove"
+                       type="button"
+                       class="btn"
+                       style="color: green;"
+                       (click)="addFormControl(combControlSet,cellConfig.parentKey, rowIndex, cellIndex)"><i
+                         class="fa fa-plus"></i></a>
+                    <a *ngIf="combControlSet.showControlRemove"
+                       type="button"
+                       class="btn"
+                       style="color: red;"
+                       (click)="removeFormControl(cellConfig.parentKey, cellConfig.parentKey+(combRowIndex+1), rowIndex, cellIndex, combRowIndex)"><i
+                         class="fa fa-minus"></i></a>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <div [formGroupName]="cellConfig.parentKey"
+                 *ngIf="!cellConfig.isAddable">
+              <div *ngFor="let combControlSet of cellConfig.controls"
+                   class="row">
+                <ng-container *ngFor="let combControl of combControlSet.controls">
+                  <div class="col-md"
+                       *ngIf="combControl.type == formControlTypes.text">
+                    <input [id]="combControlSet.key+'_'+ combControl.key"
+                           [autocomplete]="combControl.autocomplete"
+                           (change)="formControlValueChange(combControl.key, internalControlType.combination, 0, cellConfig.parentKey)"
+                           [formControlName]="combControl.key"
+                           [placeholder]="combControl.placeholder"
+                           [specialCharacters]="combControl.maskAllowedSpecialCharacters"
+                           [mask]="combControl.maskString"
+                           class="form-control">
+                    <app-error-message [form]="dynamicForm"
+                                       [keys]="[cellConfig.parentKey, combControl.key]"
+                                       [errorMessages]="validationErrorMessages">
+                    </app-error-message>
+                  </div>
+
+                  <div class="col-md"
+                       *ngIf="combControl.type == formControlTypes.select">
+                    <angular2-multiselect [data]="selectOptionDictionary[combControlSet.key+'_'+ combControl.key]"
+                                          [settings]="dropDownSettingsDictionary[combControlSet.key+'_'+ combControl.key]"
+                                          (onSelect)="formControlValueChange(combControl.key, internalControlType.combination, 0, cellConfig.parentKey)"
+                                          (onDeSelect)="formControlValueChange(combControl.key, internalControlType.combination, 0, cellConfig.parentKey)"
+                                          (onDeSelectAll)="onDropDownDeselectAll(combControl.key, internalControlType.combination, 0, cellConfig.parentKey)"
+                                          [formControlName]="combControl.key">
+                    </angular2-multiselect>
+                    <app-error-message [form]="dynamicForm"
+                                       [keys]="[cellConfig.parentKey, combControl.key]"
+                                       [errorMessages]="validationErrorMessages">
+                    </app-error-message>
+                  </div>
+                  <div class="col-md"
+                       *ngIf="combControl.type == formControlTypes.datePicker">
+                    <input type="text"
+                           placeholder="Datepicker"
+                           class="form-control"
+                           bsDatepicker
+                           [placeholder]="combControl.placeholder"
+                           [formControlName]="combControl.key"
+                           [bsConfig]="{ isAnimated: true, dateInputFormat: combControl.dateFormat}"
+                           [minDate]="combControl.dateRange.from"
+                           [maxDate]="combControl.dateRange.to">
+                    <app-error-message [form]="dynamicForm"
+                                       [keys]="[cellConfig.parentKey, combControl.key]"
+                                       [errorMessages]="validationErrorMessages">
+                    </app-error-message>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <div style="float: right; display: flex;;"
+       *ngIf='formConfig.formButtons && formConfig.formButtons.length'>
+    <div *ngFor="let button of formConfig.formButtons">
+      <button *ngIf="button.type===formAction.submit"
+              type="submit"
+              class="btn btn-success">{{button.label}}</button>
+      <button class="btn btn-default ml-2"
+              *ngIf="button.type!==formAction.submit">{{button.label}}</button>
+    </div>
+  </div>

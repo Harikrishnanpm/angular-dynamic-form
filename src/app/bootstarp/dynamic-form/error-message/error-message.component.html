@@ -1,0 +1,3 @@
+<div class="invalid-feedback" style="display: block;" *ngIf="formControl.invalid && (formControl.dirty || formControl.touched)">
+  {{getValidationErrorMessage(formControl.errors)}}
+</div>
